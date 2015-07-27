@@ -10,7 +10,7 @@ this task.
 
 `DirmonJob` runs every 5 minutes by default, looking for new files that have appeared
 based on configured entries called `DirmonEntry`. Ultimately these entries will be
-configurable via [`rocketjob_mission_control`][1], the web management interface for [rocketjob][0]
+configurable via [`rocketjob mission control`][1], the web management interface for [rocketjob][0]
 
 Example, creating a `DirmonEntry`
 
