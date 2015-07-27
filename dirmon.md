@@ -116,16 +116,14 @@ In this way it avoids having a single Directory Monitor process that constantly
 sits there monitoring folders for changes. More importantly it avoids a "single
 point of failure" that is typical for earlier directory monitoring solutions.
 Every time `DirmonJob` runs and scans the paths for new files it could be running
-on a new worker. If any server/worker is removed or shutdown it will not stop
+on a different worker. If any worker is removed or shutdown it will not stop
 `DirmonJob` since it will just run on another worker instance.
 
-There can only be one `DirmonJob` instance `queued` or `running` at a time. Any
-attempt to start a second instance will result in an exception.
+There can only be one `DirmonJob` instance `queued` or `running` at a time.
 
 If an exception occurs while running `DirmonJob`, a failed job instance will remain
 in the job list for problem determination. The failed job cannot be restarted and
-should be destroyed if no longer needed.
-
+should be destroyed when no longer needed.
 
 
 [0]: http://rocketjob.io

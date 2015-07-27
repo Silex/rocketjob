@@ -40,9 +40,12 @@ end
 
 ### High priority jobs
 
-When jobs are defined their default priority can be set. Sometimes we want
-a specific instance of the job to have a higher priority than others in the
-system:
+When jobs are defined their default priority can be set. The priority of a
+job is any value from 1 to 100, where 1 is the highest priority and 100 is the
+lowest priority. The default priority for a job is 50.
+
+Sometimes we want a specific instance of the job to have a higher priority than
+others in the system:
 
 ```ruby
 ImportJob.perform_later("file.csv") do |job|
@@ -95,7 +98,7 @@ job = CalculateJob.perform_later(24)
 # Continue doing other work while the job runs
 ```
 
-Since the job is just a document stored in MongoDB we can check on it's
+Since the job is just a document stored in [MongoDB][3] we can check on it's
 status at any time:
 
 ```ruby
