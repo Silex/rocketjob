@@ -4,7 +4,7 @@ layout: default
 
 ## Introduction
 
-Run work in the background, check on it's status and even get it's result when
+Run work in the background, check on its status and even get its result when
 the job is finished.
 
 ### Fire and forget job:

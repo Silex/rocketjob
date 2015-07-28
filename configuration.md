@@ -11,7 +11,7 @@ be configured to use a separate MongoDB instance from the Rails application as f
 
 For example, we may want `RocketJob::Job` to be stored in a Mongo Database that
 is replicated across data centers, whereas we may not want to replicate the
-`RocketJob::SlicedJob`** slices due to it's sheer volume.
+`RocketJob::SlicedJob` slices due to the amount of network traffic it would generate.
 
 ```ruby
 config.before_initialize do

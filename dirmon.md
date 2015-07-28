@@ -5,12 +5,12 @@ layout: default
 ## Directory Monitoring
 
 A common task with many batch processing systems is to look for the appearance of
-new files and kick off jobs to process them. `DirmonJob` is a job designed to do
+new files and queue jobs to process them. `DirmonJob` is a job designed to do
 this task.
 
 `DirmonJob` runs every 5 minutes by default, looking for new files that have appeared
-based on configured entries called `DirmonEntry`. Ultimately these entries will be
-configurable via [`rocketjob mission control`][1], the web management interface for [rocketjob][0]
+based on configured entries called `DirmonEntry`. These entries can be managed
+programmatically, or via [`rocketjob mission control`][1], the web management interface for [rocketjob][0].
 
 Example, creating a `DirmonEntry`
 
@@ -108,13 +108,15 @@ changed at any time as follows:
 RocketJob::Jobs::DirmonJob.first.set(check_seconds: 180, priority: 20)
 ```
 
+### High Availability
+
 The `DirmonJob` will automatically re-schedule a new instance of itself to run in
-the future after it completes a each scan/run. If successful the current job instance
+the future after it completes each scan/run. If successful the current job instance
 will destroy itself.
 
 In this way it avoids having a single Directory Monitor process that constantly
-sits there monitoring folders for changes. More importantly it avoids a "single
-point of failure" that is typical for earlier directory monitoring solutions.
+sits there monitoring folders for changes. More importantly it avoids a _single
+point of failure_ that is typical for earlier directory monitoring solutions.
 Every time `DirmonJob` runs and scans the paths for new files it could be running
 on a different worker. If any worker is removed or shutdown it will not stop
 `DirmonJob` since it will just run on another worker instance.

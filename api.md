@@ -14,13 +14,13 @@ To find the last job that was submitted:
 job = RocketJob::Job.last
 ```
 
-To find a specific job, based on it's id:
+To find a specific job, based on its id:
 
 ```ruby
 job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
 ```
 
-To change it's priority:
+To change its priority:
 
 ```ruby
 job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')

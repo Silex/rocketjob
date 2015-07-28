@@ -32,6 +32,7 @@ layout: default
     * Using the `run_at` feature when a job finishes it can create a new instance
       of itself to run at the future time interval.
     * See [DirmonJob](https://github.com/rocketjob/rocketjob/blob/master/lib/rocket_job/jobs/dirmon_job.rb) for a great example of a recurring job.
+* Metrics supported out of the box
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control
