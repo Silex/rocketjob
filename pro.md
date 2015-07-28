@@ -4,71 +4,165 @@ layout: default
 
 ## rocketjob-pro
 
-The features below are only available through the add-on `rocketjob-pro` gem:
+`rocketjob-pro` adds several enterprise features:
+
+* Enterprise scale batch job processing
+* Encryption
+* Compression
+* Direct support for large file processing
+    * Supports
+        * Zip
+        * GZip
+        * Files encrypted with Symmetric Encryption
+        * Delimited and fixed length files
+* Concurrency
+    * A running sliced Job is interrupted so that a new job with a higher priority
+      can be processed first.
+    * This allows low priority jobs to use all available resources, until a higher
+      priority job arrives, and then to resume processing once the higher priority
+      job is complete, or when it no longer requires all available workers.
+* Throttling
+    * Throttle how many workers should work on a specific sliced job at a time.
+
+The features below are only available with `rocketjob-pro`:
 
 ### Batch Processing
 
-`rocketjob-pro` supports uploading the entire contents of file into a single job
-for processing. The file is broken into slices of around 100 rows/records/lines
-each. These "bite-size" slices are then processed concurrently by all the available
-workers. Uploading a file is in essence a single job and with `rocketjob-pro` it
-can now be managed as such.
+`rocketjob-pro` has out of the box support for very large files. It can easily upload
+entire files into the Job for processing. It automatically slices up the records in
+the file, based on some delimeter or newline, and puts them into slices for processing.
 
-For example, if a single file contains 1,000,000 lines it will result in 1 job
-in [rocketjob][0] which consists of 10,000 slices, assuming we are using the default
-`slice_size` of 100. This makes it very simple to process and monitor this single
-job in [rocketjob mission control][1].
+```ruby
+class ReverseJob < RocketJob::SlicedJob
+  rocketjob do |job|
+    # Number of lines/records for each slice
+    job.slice_size          = 100
 
-By converting the large file into a single job of "slices" it is easy to determine
-how far the job is, or pause the job if needed, or retry all the failed slices if any.
+    # Keep the job around after it has finished
+    job.destroy_on_complete = false
+
+    # Collect any output from the job
+    job.collect_output      = true
+  end
+
+  def perform(line)
+    # Process each line of the file
+    line.reverse
+  end
+end
+```
+
+Queue the job for processing:
+
+```ruby
+job = ReverseJob.perform_later do |job|
+  # Upload a file into the job for processing
+  job.upload('myfile.txt')
+end
+```
+
+When complete, download the results of the batch into a file:
+
+```ruby
+# Download the output and compress the output into a GZip file
+job.download('reversed.txt.gz')
+```
 
 Slices take a large and unwieldy batch job and break it up into "bite-size" pieces
-that can be processed a slice at a time by the workers. Each slice is processed
-in it's entirety by a worker before moving onto the next one. This makes it more
-scalable since the system is not trashing trying to process the 1,000,000 lines
-as separate jobs. Ideally each slice should take a worker between 30 seconds and
-3 minutes to complete. The slice size is configurable by setting the `slice_size`
-property on the job when it is defined.
+that can be processed a slice at a time by the workers.
+The job can be paused, resumed, or even aborted as a whole. If there are any failed
+slices when the job finishes, they can all be retried by hitting retry on the job itself.
 
-A batch job does not only have to be one that is created from a file, it can hold
-any data that is needed as input for the job.
+For example, using the default `slice_size` of 100, if the file contains 1,000,000
+lines then this job will contain only 10,000 slices.
 
-Since each "batch" job is just one job with lots of slices, it is easy to pause
-the job if needed, and then resume it later. Additionally it's priority can be
-changed as needed.
+Processing the output of a job instead of downloading it into a file:
 
-Batch Jobs can also retain any output from processing the entire job so that
-it can be downloaded into a file, or consumed for subsequent processing.
+```ruby
+# Display the results that were returned
+job.output.each do |slice|
+  slice.each do |line|
+    puts line
+  end
+end
+```
+
+### Encryption
+
+```ruby
+class ReverseJob < RocketJob::SlicedJob
+  rocketjob do |job|
+    # Encrypt input and output data
+    job.encrypt = true
+  end
+
+  def perform(line)
+    line.reverse
+  end
+end
+```
+
+The data uploaded into a sliced job can be encrypted while being uploaded
+to secure sensitive data. Encryption ensure it meets for example PCI Compliance
+requirements for sensitive data at rest and in-flight.
+
+Similarly the output data can be encrypted in an sliced job to keep that sensitive
+data private.
+
+### Compression
+
+```ruby
+class ReverseJob < RocketJob::SlicedJob
+  rocketjob do |job|
+    # Compress input and output data
+    job.compress = true
+  end
+
+  def perform(line)
+    line.reverse
+  end
+end
+```
+
+Support for compression reduces network utilization and disk storage
+requirements. Works extremely well when processing large text files.
 
 #### Throttling
 
+```ruby
+class ReverseJob < RocketJob::SlicedJob
+  rocketjob do |job|
+    # No more than 10 workers should work on this job at a time
+    job.max_active_workers = 10
+  end
+
+  def perform(line)
+    line.reverse
+  end
+end
+```
+
 `rocketjob-pro` has the ability to throttle the number of workers that can work on
-a specific job instance at any time.
+a specific sliced job instance at any time.
 
 Sometimes there are jobs that we don't want to allow to use all available workers.
 Too many concurrent workers could for example:
 
-* Overwhelm a third party system
-* Affect online production systems by writing too much data to the master database
+* Overwhelm a third party system.
+* Affect the online production systems by writing too much data to the master database.
 
 Or, we may want to limit the number of workers working on the same job instance
-so that several jobs at the same priority can be run at concurrently.
+so that several jobs of the same priority can be run concurrently.
 
 For example, we use the throttling mechanism to limit how many workers are
 re-encrypting all the data in our database as part of our key-rotation for
 PCI Compliance reasons. In this way the re-encryption can run constantly in
-the background without impacting online traffic that is extremely latency sensitive.
+the background without impacting online traffic, which is extremely latency sensitive.
 
 The throttle can be changed at any time while the job is running to either increase
 or decrease the number of workers working on that job. This ability allows us to
 quickly change the number of workers depending on the impact on system and third
 party resources.
-
-### Large file support
-
-RocketJob Pro has out of the box support for very large files. It can easily upload
-entire files into the Job for processing. It automatically slices up the records in
-the file, based on some delimeter or newline, and puts them into slices for processing.
 
 ### Directory Monitor
 
@@ -76,13 +170,44 @@ Directory Monitor can be used to monitor directories for new files and then to
 load the entire file into the job for processing. The file is then either archived,
 or deleted based on the configuration for that path.
 
-### Encryption
+### Multiple Output Files
 
-PCI Compliance
+`rocketjob-pro` can also create multiple output files by categorizing the result
+of the perform method.
 
-### Compression
+This can be used to output one file with results from the job and another for
+outputting for example the lines that were too short.
 
-Reduce network utilization and disk storage requirements.
+```ruby
+class MultiFileJob < RocketJob::SlicedJob
+  rocket_job do |job|
+    job.collect_output      = true
+    job.destroy_on_complete = false
+    # Register additional output categories for the job
+    job.output_categories   = [ :invalid ]
+  end
+
+  def perform(line)
+    if line.length < 10
+      # The line is too short, send it to the invalid output collection
+      Result.new(line, :invalid)
+    else
+      # Reverse the line
+      line.reverse
+    end
+  end
+end
+```
+
+When complete, download the results of the batch into 2 files:
+
+```ruby
+# Download the regular results
+job.download('reversed.txt.gz')
+
+# Download the invalid results to a separate file
+job(:invalid).download('invalid.txt.gz')
+```
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

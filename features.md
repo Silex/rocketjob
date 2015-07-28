@@ -9,6 +9,18 @@ layout: default
 * Ability to keep the job itself on completion, along with its result if any
     * Useful for audit or other management purposes
     * Frequent jobs can be destroyed on completion to reduce clutter or disk storage requirements
+* High performance logging
+    * Supports sending log messages, exceptions, and errors to one or more of:
+        * File
+        * Bugsnag
+        * MongoDB
+        * NewRelic
+        * Splunk
+        * Syslog (TCP, UDP, & local)
+        * Any user definable target via custom appenders
+* Error Handling
+    * The error and complete backtrace is kept for every job that fails to aid in
+      problem determination.
 * User definable callbacks per Job class. For example, send an email, or perform other notifications
     * before_start
     * before_complete
@@ -24,15 +36,11 @@ layout: default
           for up to 3 times, etc...
     * The `after_fail` callback can be used to implement your own custom automated
       retry behavior.
-* Error Handling
-    * The error and complete backtrace is kept for every job that fails to aid problem
-      determination.
 * Cron replacement
     * [rocketjob][0] is a great place to store jobs that need to run periodically
     * Using the `run_at` feature when a job finishes it can create a new instance
       of itself to run at the future time interval.
     * See [DirmonJob](https://github.com/rocketjob/rocketjob/blob/master/lib/rocket_job/jobs/dirmon_job.rb) for a great example of a recurring job.
-* Metrics supported out of the box
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

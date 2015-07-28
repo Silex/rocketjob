@@ -62,7 +62,7 @@ Another significant production support challenge is trying to get [resque][1] or
 to process the batch jobs in the order required by the business. Switching from queue-based
 to priority-based job processing means that all jobs are processed in the order of
 their priority and not what queues are defined on what servers and in what quantity.
-This approach has allows us to significantly increase the CPU and IO utilization
+This approach has allowed us to significantly increase the CPU and IO utilization
 across all worker machines. The traditional queue based approach required constant
 tweaking in the production environment to try and balance workload without overwhelming
 any one server.
