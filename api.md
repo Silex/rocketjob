@@ -2,7 +2,7 @@
 layout: default
 ---
 
-### Programmatic Interface
+### Application Programming Interface
 
 Aside from being able to see and change jobs through the [rocketjob mission control][1]
 web interface it is often useful, and even highly desirable to be able to access
@@ -45,7 +45,7 @@ puts "The job has been running for: #{job.duration}"
 How many `MyJob` jobs are currently being processed?
 
 ```ruby
-count = RocketJob::MyJob.where(state: :running).count
+count = MyJob.where(state: :running).count
 ```
 
 Retry all failed jobs in the system:
@@ -56,7 +56,19 @@ RocketJob::Job.where(state: :failed).each do |job|
 end
 ```
 
-RocketJob::Job uses the same ActiveModel implementation that is used in ActiveRecord
+Is a job still running?
+
+```ruby
+job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
+
+if job.completed?
+  puts "Finished!"
+elsif job.running?
+  puts "The job is being processed by worker: #{job.worker_name}"
+end
+```
+
+`RocketJob::Job` uses the same ActiveModel implementation that is used in ActiveRecord
 and thereby exposes a very familiar API for anyone familiar with Rails.
 
 Since everything about this job is held in this one document, all
