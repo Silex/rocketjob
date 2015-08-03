@@ -209,5 +209,18 @@ job.download('reversed.txt.gz')
 job(:invalid).download('invalid.txt.gz')
 ```
 
+## Error Handling
+
+Since `rocketjob-pro` breaks a single job into slices, individual records within
+slices can fail while others are still being processed.
+
+```ruby
+# Display the exceptions for failed slices:
+job = RocketJob::Job.find('55bbce6b498e76424fa103e8')
+job.input.each_failed_record do |record, slice|
+  p slice.exception
+end
+```
+
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

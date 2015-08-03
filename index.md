@@ -7,6 +7,8 @@ layout: default
 Run work in the background, check on its status and even get its result when
 the job is finished.
 
+<img src="images/rocket/rocket-icon-256x256.png" alt="rocketjob">
+
 ### Fire and forget job:
 
 Many jobs are relatively simple, just go off and do some task.
