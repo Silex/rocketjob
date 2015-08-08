@@ -2,16 +2,15 @@
 layout: default
 ---
 
-## Introduction
-
-Run work in the background, check on its status and even get its result when
+Run jobs quickly and reliably in the background. Check on job status and even get its result when
 the job is finished.
 
 <img src="images/rocket/rocket-icon-256x256.png" alt="rocketjob">
 
-### Fire and forget job:
+[rocketjob][0] is a high performance, reliable, concurrent, background job processing system for [Ruby](http://ruby-lang.org), [JRuby](http://jruby.org) and [Rubinius](http://rubini.us).
+Jobs written in Ruby are easily and reliably executed in the background across a cluster of workers.
 
-Many jobs are relatively simple, just go off and do some task.
+### Fire and forget job:
 
 ```ruby
 class ImportJob < RocketJob::Job
@@ -27,7 +26,7 @@ Queue the job for processing:
 ImportJob.perform_later("file.csv")
 ```
 
-If the job fails it will be visible in mission control and can be retried.
+If the job fails it will be visible in [Mission Control][1] and be retried.
 
 ### Future dated jobs
 
@@ -56,25 +55,28 @@ ImportJob.perform_later("file.csv") do |job|
 end
 ```
 
-### Expired jobs
+### Job retention
 
-Sometimes queued requests for processing are no longer business relevant if not
-completed by the worker by a specific date and time.
-
-The system can queue a job for processing, but if the workers are too busy with
-other higher priority jobs and are not able to process this job by its expiry
-time, then discard the job without processing it at all:
+Completed jobs can be retained so that they can be viewed in [Mission Control][1],
+or retained for audit or support reasons. 
 
 ```ruby
-ImportJob.perform_later("file.csv") do |job|
-  # Don't process this job if it is queued for longer than 15 minutes
-  job.expires_at = 15.minutes.from_now
+class CalculateJob < RocketJob::Job
+  rocketjob do |job|
+    # Retain the job when it completes
+    job.destroy_on_complete = false
+  end
+
+  def perform(value)
+    # Perform work here 
+  end
 end
 ```
 
-### Jobs with results
 
-Run a job and when it is finished, get the result:
+### Job output
+
+Run a job and when it is finished, store the result:
 
 ```ruby
 class CalculateJob < RocketJob::Job
@@ -86,7 +88,7 @@ class CalculateJob < RocketJob::Job
   end
 
   def perform(value)
-    # Some long running calculation here, or multiple database calls etc.
+    # The output from this method is stored in the job itself 
     { calculation: value * 1000 }
   end
 end
@@ -98,7 +100,13 @@ Queue the job for processing:
 job = CalculateJob.perform_later(24)
 
 # Continue doing other work while the job runs
+
+if job.reload.completed?
+  puts "Job result: #{job.result}"
+end
 ```
+
+### Job status
 
 Since the job is just a document stored in [MongoDB][3] we can check on it's
 status at any time:
@@ -107,30 +115,116 @@ status at any time:
 # Update the job's in memory state
 job.reload
 
-puts "Job's current state: #{job.state}"
+# Current state ( For example: :queued, :running, :completed. etc. )
+puts "Job is: #{job.state}"
 
-puts "Full job status as shown in mission control: #{job.status.inspect}"
+# Complete state information as displayed in mission control
+puts "Full job status: #{job.status.inspect}"
+```
 
-if job.completed?
-  puts "Yay, it is finished"
-  puts "The result of the calculation: #{job.result}"
+### Expired jobs
+
+Sometimes queued requests for processing are no longer business relevant if not
+completed by the worker by a specific date and time.
+
+The system can queue a job for processing, but if the workers are too busy with
+other higher priority jobs and are not able to process this job by its expiry
+time, then the job will be discarded without processing:
+
+```ruby
+ImportJob.perform_later("file.csv") do |job|
+  # Don't process this job if it is queued for longer than 15 minutes
+  job.expires_at = 15.minutes.from_now
 end
 ```
 
-### Start a worker
+### Error Handling
 
-To start a worker to process the jobs above:
+The error and complete backtrace is kept for every job that fails to aid in
+problem determination.
+
+### Callbacks
+
+User definable callbacks per Job class. 
+
+For example, send an email, or perform other notifications
+
+* before_start
+* before_complete
+* before_fail
+* before_retry
+* before_pause
+* before_resume
+* before_abort
+
+### Custom retry behavior
+
+When a job fails, the logic for retrying it is usually very specific to that
+particular job.
+
+* For example, retry the job again in 10 minutes, or retry immediately
+  for up to 3 times, etc...
+* The `after_fail` callback can be used to implement your own custom automated
+  retry behavior.
+
+### Cron replacement
+
+* [rocketjob][0] is a great place to store jobs that need to run periodically
+* Using the `run_at` feature when a job finishes it can create a new instance
+  of itself to run at the future time interval.
+* See [DirmonJob](https://github.com/rocketjob/rocketjob/blob/master/lib/rocket_job/jobs/dirmon_job.rb) for a great example of a recurring job.
+
+### Reliability
+
+If a worker process crashes while processing a job, the job remains in the queue and is never lost.
+When the _worker_ instance is destroyed it's running jobs are re-queued amd will be processed
+by another _worker_.
+
+### Scalability
+
+As workload increases greater throughput can be achieved by adding more servers. Each server
+adds more CPU, Memory and local disk to process more jobs.
+
+[rocketjob][0] scales linearly, meaning doubling the worker servers should double throughput. 
+Bottlenecks tend to be databases, networks, or external suppliers that are called during job 
+processing. Additional database slaves can be added to scale for example, MySQL, Postgres, 
+along with sending database reads to the background job workers.
+
+### High performance logging
+
+Supports sending log messages, exceptions, and errors to one or more of:
+
+* File
+* Bugsnag
+* MongoDB
+* NewRelic
+* Splunk
+* Syslog (TCP, UDP, & local)
+* Any user definable target via custom appenders
+
+## Start a worker
+
+To start a [rocketjob][0] worker process in which to run worker threads:
 
 ```ruby
 bin/rocketjob
 ```
+
+## Mission Control
+
+[Mission Control][1] is the web interface for viewing and managing [rocketjob][0] jobs.
+It is a Rails Engine that can be loaded into any Rails project.
+[Mission Control][1] can also be run stand-alone in a shell Rails application.
+
+By separating [Mission Control][1] into a separate gem means it does not
+have to be loaded everywhere [rocketjob][0] jobs are defined or run.
 
 ## Installation
 
 Add the [rocketjob][0] gem to your Gemfile
 
 ```ruby
-   gem 'rocketjob', '~> 0.10'
+   gem 'rocketjob'
 ```
 
 Now run `bundle` to install [rocketjob][0].
@@ -156,31 +250,6 @@ Then follow the on-screen instructions to start [MongoDB][3].
 
 For other platforms, see [MongoDB Downloads](https://www.mongodb.org/downloads)
 
-## Management
-
-[rocketjob mission control][1] is the web interface for viewing and managing [rocketjob][0] jobs.
-It is a Rails Engine that can be loaded into any Rails project.
-[rocketjob mission control][1] can also be run stand-alone in a shell Rails application.
-
-By separating [rocketjob mission control][1] into a separate gem means it does not
-have to be loaded everywhere [rocketjob][0] jobs are defined or run.
-
-## Installation
-
-Add the [rocketjob mission control][1] gem to your Gemfile
-
-```ruby
-   gem 'rocketjob_mission_control', '~> 0.10'
-```
-
-Now run `bundle` to install [rocketjob mission control][1]
-
-If not running `bundler`, just run:
-
-```
-   gem install rocketjob_mission_control
-```
-
 ### Dependencies
 
 [rocketjob][0] requires:
@@ -193,7 +262,9 @@ If not running `bundler`, just run:
  * JRuby 1.7, 9.0.0.0, or greater
  * Rubinius 2.5, or greater
 
+## [Next: Mission Control ==>][1]
+
 [0]: http://rocketjob.io
-[1]: https://github.com/rocketjob/rocketjob_mission_control
+[1]: mission_control.html
 [2]: http://reidmorrison.github.io/semantic_logger
 [3]: http://mongodb.org

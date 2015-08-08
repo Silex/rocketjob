@@ -61,6 +61,8 @@ the basic job has implemented:
 * Custom retry logic specific to a class of job can be implemented.
 * The way the job is processed by the workers can be completely customized.
 
+## [Next: Why? ==>](why.html)
+
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control
 [2]: https://github.com/resque/resque

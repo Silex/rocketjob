@@ -74,5 +74,11 @@ and thereby exposes a very familiar API for anyone familiar with Rails.
 Since everything about this job is held in this one document, all
 details about the job are accessible programmatically.
 
+## Reference
+
+* [API Reference](http://www.rubydoc.info/gems/rocketjob/)
+
+## [Next: rocketjob-pro ==>](pro.html)
+
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

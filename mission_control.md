@@ -80,5 +80,26 @@ The workers can be resumed later by clicking on `Actions` and selecting `Resume 
 
 To shutdown all workers via [Mission Control][1], click on `Actions` and select `Stop All`. 
 
+## Installation
+
+[rocketjob mission control][1] is a rails engine that can be added to any existing Rails 4 or 
+Rails 5 rails application.
+
+Add the [rocketjob mission control][1] gem to your Gemfile
+
+```ruby
+   gem 'rocketjob_mission_control', '~> 0.10'
+```
+
+Now run `bundle` to install [rocketjob mission control][1]
+
+Add the following line to `config/routes.rb` in your Rails application:
+
+```ruby
+mount RocketJobMissionControl::Engine => 'rocketjob'
+```
+
+## [Next: API ==>](api.html)
+
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

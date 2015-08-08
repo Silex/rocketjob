@@ -58,3 +58,5 @@ RocketJob::Config.mongo_connection = Mongo::MongoClient.from_uri(uri, options)
 uri = 'mongodb://mongo1.site.com:27017,mongo2.site.com:27017/production_rocketjob_slices'
 RocketJob::Config.mongo_work_connection = Mongo::MongoClient.from_uri(uri, options)
 ```
+
+## [Next: Architecture ==>](architecture.html)

@@ -4,33 +4,97 @@ layout: default
 
 ## rocketjob-pro
 
-`rocketjob-pro` adds several enterprise features:
+[rocketjob-pro][2] adds several enterprise features
 
-* Enterprise scale batch job processing
-* Encryption
-* Compression
-* Direct support for large file processing
-    * Supports
-        * Zip
-        * GZip
-        * Files encrypted with Symmetric Encryption
-        * Delimited and fixed length files
-* Concurrency
-    * A running sliced Job is interrupted so that a new job with a higher priority
-      can be processed first.
-    * This allows low priority jobs to use all available resources, until a higher
-      priority job arrives, and then to resume processing once the higher priority
-      job is complete, or when it no longer requires all available workers.
-* Throttling
-    * Throttle how many workers should work on a specific sliced job at a time.
+### Batch processing
 
-The features below are only available with `rocketjob-pro`:
+Jobs can be broken up into slices so that a _single_ job can be processed concurrently by all
+available workers
 
-### Batch Processing
+```ruby
+class ReverseJob < RocketJob::SlicedJob
+  rocketjob do |job|
+    # Number of lines/records for each slice
+    job.slice_size = 100
+  end
 
-`rocketjob-pro` has out of the box support for very large files. It can easily upload
+  def perform(line)
+    # Work on a single record at a time across many workers
+  end
+end
+```
+
+Queue the job for processing:
+
+```ruby
+job = ReverseJob.perform_later do |job|
+  # Records would come from a database query, file, etc.
+  records = %w(these are some words that are to be processed at the same time on many workers)
+  
+  # Load records for processing into the job, until the block returns nil
+  job.upload_records do
+    records.shift
+  end
+end
+```
+
+### Batch processing and collect results
+
+Collect the output from running a batch
+
+```ruby
+class ReverseJob < RocketJob::SlicedJob
+  rocketjob do |job|
+    # Number of lines/records for each slice
+    job.slice_size = 100
+    
+    # Keep the job around after it has finished
+    job.destroy_on_complete = false
+
+    # Collect any output from the job
+    job.collect_output      = true
+  end
+
+  def perform(line)
+    # Work on a single record at a time across many workers
+  end
+end
+```
+
+Queue the job for processing:
+
+```ruby
+job = ReverseJob.perform_later do |job|
+  # Records would come from a database query, file, etc.
+  records = %w(these are some words that are to be processed at the same time on many workers)
+  
+  # Load records for processing into the job, until the block returns nil
+  job.upload_records do
+    records.shift
+  end
+end
+```
+
+Processing the output from the job:
+
+```ruby
+# Display the results that were returned
+job.output.each do |slice|
+  slice.each do |record|
+    # Display each result returned from job
+    puts record
+  end
+end
+```
+
+The order of the output gathered above is exactly the same as the order in which the records
+were uploaded into the job. This makes it easy to correlate an input record with its corresponding output.
+
+### Large file processing
+
+[rocketjob-pro][2] has out of the box support for very large files. It can easily upload
 entire files into the Job for processing. It automatically slices up the records in
-the file, based on some delimeter or newline, and puts them into slices for processing.
+the file, and puts them into slices for processing.
 
 ```ruby
 class ReverseJob < RocketJob::SlicedJob
@@ -68,24 +132,22 @@ When complete, download the results of the batch into a file:
 job.download('reversed.txt.gz')
 ```
 
-Slices take a large and unwieldy batch job and break it up into "bite-size" pieces
-that can be processed a slice at a time by the workers.
-The job can be paused, resumed, or even aborted as a whole. If there are any failed
-slices when the job finishes, they can all be retried by hitting retry on the job itself.
+[rocketjob-pro][2] has built-in support for reading and writing
+ 
+* `Zip` files
+* `GZip` files
+* files encrypted with [Symmetric Encryption][3]
+* delimited files
+    * Windows CR/LF text files
+    * Linux text files
+    * Auto-detects Windows or Linux line endings 
+    * Any custom delimiter
+* files with fixed length records
 
-For example, using the default `slice_size` of 100, if the file contains 1,000,000
-lines then this job will contain only 10,000 slices.
+Note: 
 
-Processing the output of a job instead of downloading it into a file:
-
-```ruby
-# Display the results that were returned
-job.output.each do |slice|
-  slice.each do |line|
-    puts line
-  end
-end
-```
+* In order to read and write `Zip` on Ruby MRI and Rubinius, add the gem `rubyzip` to your bundle.
+* Not required with JRuby since it will use the native `Zip` support built into Java
 
 ### Encryption
 
@@ -102,12 +164,11 @@ class ReverseJob < RocketJob::SlicedJob
 end
 ```
 
-The data uploaded into a sliced job can be encrypted while being uploaded
-to secure sensitive data. Encryption ensure it meets for example PCI Compliance
+By setting `job.encrypt = true` the uploaded data is encrypted during the upload
+to secure sensitive data. Encryption ensures it meets for example PCI Compliance
 requirements for sensitive data at rest and in-flight.
 
-Similarly the output data can be encrypted in an sliced job to keep that sensitive
-data private.
+Similarly, the output data will also be encrypted to ensure it remains secure.
 
 ### Compression
 
@@ -127,7 +188,7 @@ end
 Support for compression reduces network utilization and disk storage
 requirements. Works extremely well when processing large text files.
 
-#### Throttling
+### Rate limiting / Throttling workers
 
 ```ruby
 class ReverseJob < RocketJob::SlicedJob
@@ -142,7 +203,7 @@ class ReverseJob < RocketJob::SlicedJob
 end
 ```
 
-`rocketjob-pro` has the ability to throttle the number of workers that can work on
+[rocketjob-pro][2] has the ability to throttle the number of workers that can work on
 a specific sliced job instance at any time.
 
 Sometimes there are jobs that we don't want to allow to use all available workers.
@@ -164,6 +225,25 @@ or decrease the number of workers working on that job. This ability allows us to
 quickly change the number of workers depending on the impact on system and third
 party resources.
 
+### Concurrency
+
+Jobs derived from `RocketJob::SlicedJob` break their work up into slices so that many workers can work
+on the individual slices at the same time.
+
+Slices take a large and unwieldy batch job and break it up into "bite-size" pieces
+that can be processed a slice at a time by the workers.
+
+Because the job consists of lots of smaller slices it can be paused, resumed, or even aborted as a whole. 
+If there are any failed slices when the job finishes, they can all be retried by retrying the job itself.
+
+For example, using the default `slice_size` of 100, if the file contains 1,000,000
+lines then this job will contain only 10,000 slices.
+
+A running sliced Job will be interrupted if a new job with a higher priority is queued for
+processing.  This allows low priority jobs to use all available resources, until a higher
+priority job arrives, and then to resume processing once the higher priority
+job is complete.
+
 ### Directory Monitor
 
 Directory Monitor can be used to monitor directories for new files and then to
@@ -172,7 +252,7 @@ or deleted based on the configuration for that path.
 
 ### Multiple Output Files
 
-`rocketjob-pro` can also create multiple output files by categorizing the result
+[rocketjob-pro][2] can also create multiple output files by categorizing the result
 of the perform method.
 
 This can be used to output one file with results from the job and another for
@@ -211,7 +291,7 @@ job(:invalid).download('invalid.txt.gz')
 
 ## Error Handling
 
-Since `rocketjob-pro` breaks a single job into slices, individual records within
+Since [rocketjob-pro][2] breaks a single job into slices, individual records within
 slices can fail while others are still being processed.
 
 ```ruby
@@ -222,5 +302,9 @@ job.input.each_failed_record do |record, slice|
 end
 ```
 
+## [Next: Compare ==>](compare.html)
+
 [0]: http://rocketjob.io
-[1]: https://github.com/rocketjob/rocketjob_mission_control
+[1]: mission_control.html
+[2]: pro.html
+[3]: http://reidmorrison.github.io/symmetric-encryption

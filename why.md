@@ -71,10 +71,10 @@ End-users are now able to modify the priority of their various jobs at runtime
 so that they can get that business critical job out first, instead of having to
 wait for other jobs of the same type/priority to finish first.
 
-With `rocketjob-pro` an entire file can be uploaded into the job itself. Relevant data
+With [rocketjob-pro][10] an entire file can be uploaded into the job itself. Relevant data
 can be held within the job, including both input and output data, rather than
 forcing jobs to have to store their input or output data in yet another data store.
-Additionally, `rocketjob-pro` supports encryption and compression of any data uploaded
+Additionally, [rocketjob-pro][10] supports encryption and compression of any data uploaded
 into Sliced Jobs to ensure PCI compliance and to prevent sensitive information from being exposed
 either at rest in the data store, or whilst being transmitted over the network.
 Often large files that need to be processed contain sensitive data that must be
@@ -84,7 +84,7 @@ encrypted. Having this capability built-in ensures that all our jobs are properl
 that loading 1,000,000 records from a file will result in 1,000,000 Sidekiq jobs, each
 one is processed separately.
 
-In `rocketjob-pro`, the above 1,000,000 records result in only 1 job in [rocketjob][0] making it
+In [rocketjob-pro][10], the above 1,000,000 records result in only 1 job in [rocketjob][0] making it
 very simple to process and monitor in [rocketjob mission control][1]. These 1,000,000
 records are broken up into slices that are then separately processed by workers.
 Since each slice contains by default 100 records each, only 10,000 items are queued
@@ -99,4 +99,4 @@ focus on writing code again. :)
 [3]: http://sidekiq.org/pro/
 [4]: http://redis.io
 [7]: https://github.com/collectiveidea/delayed_job/
-[10]: http://rocketjob.io/pro.html
+[10]: pro.html
