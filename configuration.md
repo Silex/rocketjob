@@ -4,59 +4,167 @@ layout: default
 
 ## Configuration
 
-### Rails Configuration
+## New Rails installation
 
-MongoMapper will already configure itself in Rails environments. `rocketjob` can
-be configured to use a separate MongoDB instance from the Rails application as follows:
+Create a new Rails application, if one does not exist already
 
-For example, we may want `RocketJob::Job` to be stored in a Mongo Database that
-is replicated across data centers, whereas we may not want to replicate the
-`RocketJob::SlicedJob` slices due to the amount of network traffic it would generate.
+```
+gem install rails
+rails new myapp
+cd myapp
+```
+
+## Configure existing Rails application
+
+Add the following lines to the bottom of the file `Gemfile`:
 
 ```ruby
-config.before_initialize do
-  # Share the common mongo configuration file
-  config_file = root.join('config', 'mongo.yml')
-  if config_file.file?
-    config = YAML.load(ERB.new(config_file.read).result)
-    if config["#{Rails.env}_rocketjob]
-      options = (config['options']||{}).symbolize_keys
-      options[:logger] = SemanticLogger::DebugAsTraceLogger.new('Mongo:rocketjob')
-      RocketJob::Config.mongo_connection = Mongo::MongoClient.from_uri(config['uri'], options)
-    end
-    # It is also possible to store the jobs themselves in a separate MongoDB database
-    if config["#{Rails.env}_rocketjob_work]
-      options = (config['options']||{}).symbolize_keys
-      options[:logger] = SemanticLogger::DebugAsTraceLogger.new('Mongo:rocketjob_work')
-      RocketJob::Config.mongo_work_connection = Mongo::MongoClient.from_uri(config['uri'], options)
-    end
-  else
-    puts "\nmongo.yml config file not found: #{config_file}"
+gem 'rocketjob'
+gem 'bson_ext', platform: :ruby
+gem 'rails_semantic_logger'
+```
+
+Generate Mongo Configuration file:
+
+```
+bundle exec rails generate mongo_mapper:config
+```
+
+If you are running `Spring`, which is installed by default by Rails, stop the backgound
+spring processes to get them to reload:
+
+```
+bin/spring stop
+```
+
+Start a rocketjob worker process:
+
+```
+bundle exec rocketjob
+```
+
+Or, if you have generated bundler bin stubs:
+
+```
+bin/rocketjob
+```
+
+If you want to configure your application with a MongoDB URI (i.e. on Heroku), then you can use the following settings for your production environment:
+
+```yaml
+production:
+ uri: <%= ENV['MONGODB_URI'] %>
+```
+
+
+# Standalone Configuration
+
+When running stand-alone without Rails.
+
+Create a new directory for running RocketJob workers:
+
+```
+mkdir standalone
+mkdir standalone/jobs
+mkdir standalone/config
+cd standalone/config
+```
+
+Create a `mongo.yml` configuration file with the following contents:
+
+```yaml
+defaults: &defaults
+  host: 127.0.0.1
+  port: 27017
+  options:
+    w: 1
+    pool_size: 1
+    slave_ok: false
+    ssl: false
+
+development:
+  <<: *defaults
+  database: myapp_development
+
+test:
+  <<: *defaults
+  database: myapp_test
+  w: 0
+
+# set these environment variables on your prod server
+production:
+  <<: *defaults
+  database: myapp
+  username: <%= ENV['MONGO_USERNAME'] %>
+  password: <%= ENV['MONGO_PASSWORD'] %>
+```
+
+Change back to the standalone directory
+
+```
+cd ..
+```
+
+Create a file called `Gemfile` with the following contents:
+
+```ruby
+gem 'rocketjob'
+gem 'bson_ext', platform: :ruby
+```
+
+Install the gem files:
+
+```
+bundle
+```
+
+
+Create a new Job for the workers to process. Create a file called `hello_world_job.rb`
+in the `jobs` directory with the following contents:
+
+```ruby
+class HelloWorldJob < RocketJob::Job
+  def perform
+    puts "HELLO WORLD"
   end
 end
 ```
 
-For an example config file, `config/mongo.yml`, see [mongo.yml](https://github.com/rocketjob/rocketjob/blob/master/test/config/mongo.yml)
+Start a worker process, from within the `standalone` directory:
 
-### Standalone Configuration
+```
+bundle exec rocketjob
+```
 
-When running `rocketjob` in a standalone environment without Rails, the MongoDB
-connections will need to be setup as follows:
+Open a new console to queue a new job request:
+
+```
+bundle exec irb
+```
+
+Enter the following code:
 
 ```ruby
-options = {
-  pool_size:    50,
-  pool_timeout: 5,
-  logger:       SemanticLogger::DebugAsTraceLogger.new('Mongo:Work'),
-}
+require 'rocketjob'
 
-# For example when using a replica-set for high availability
-uri = 'mongodb://mongo1.site.com:27017,mongo2.site.com:27017/production_rocketjob'
-RocketJob::Config.mongo_connection = Mongo::MongoClient.from_uri(uri, options)
+# Log to development.log
+SemanticLogger.add_appender('development.log', &SemanticLogger::Appender::Base.colorized_formatter)
+SemanticLogger.default_level = :debug
 
-# Use a separate database, or even server for `RocketJob::SlicedJob` slices
-uri = 'mongodb://mongo1.site.com:27017,mongo2.site.com:27017/production_rocketjob_slices'
-RocketJob::Config.mongo_work_connection = Mongo::MongoClient.from_uri(uri, options)
+# Configure Mongo
+RocketJob::CLI.load_config('development', 'config/mongo.yml')
+
+require_relative 'jobs/hello_world_job'
+
+HelloWorldJob.create!
+```
+
+The console running `rocketjob` should show something similar to:
+
+```
+2015-09-09 22:54:41.979435 I [25215:rocketjob 1] [Job 55f0f0f1a26ec06280000001] HelloWorldJob -- Start HelloWorldJob#perform
+HELLO WORLD
+2015-09-09 22:54:41.979662 I [25215:rocketjob 1] [Job 55f0f0f1a26ec06280000001] (0.1ms) HelloWorldJob -- Completed HelloWorldJob#perform
 ```
 
 ## [Next: Architecture ==>](architecture.html)

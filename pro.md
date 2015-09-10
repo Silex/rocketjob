@@ -28,12 +28,14 @@ Queue the job for processing:
 
 ```ruby
 job = ReverseJob.perform_later do |job|
-  # Records would come from a database query, file, etc.
-  records = %w(these are some words that are to be processed at the same time on many workers)
-  
-  # Load records for processing into the job, until the block returns nil
-  job.upload_records do
-    records.shift
+  # Words would come from a database query, file, etc.
+  words = %w(these are some words that are to be processed at the same time on many workers)
+
+  # Load words as individual records for processing into the job
+  job.upload do |records|
+    words.each do |word|
+      record << word
+    end
   end
 end
 ```
@@ -47,7 +49,7 @@ class ReverseJob < RocketJob::SlicedJob
   rocketjob do |job|
     # Number of lines/records for each slice
     job.slice_size = 100
-    
+
     # Keep the job around after it has finished
     job.destroy_on_complete = false
 
@@ -65,12 +67,14 @@ Queue the job for processing:
 
 ```ruby
 job = ReverseJob.perform_later do |job|
-  # Records would come from a database query, file, etc.
-  records = %w(these are some words that are to be processed at the same time on many workers)
-  
-  # Load records for processing into the job, until the block returns nil
-  job.upload_records do
-    records.shift
+  # Words would come from a database query, file, etc.
+  words = %w(these are some words that are to be processed at the same time on many workers)
+
+  # Load words as records for processing into the job
+  job.upload do |records|
+    words.each do |word|
+      record << word
+    end
   end
 end
 ```
@@ -133,18 +137,18 @@ job.download('reversed.txt.gz')
 ```
 
 [rocketjob-pro][2] has built-in support for reading and writing
- 
+
 * `Zip` files
 * `GZip` files
 * files encrypted with [Symmetric Encryption][3]
 * delimited files
     * Windows CR/LF text files
     * Linux text files
-    * Auto-detects Windows or Linux line endings 
+    * Auto-detects Windows or Linux line endings
     * Any custom delimiter
 * files with fixed length records
 
-Note: 
+Note:
 
 * In order to read and write `Zip` on Ruby MRI and Rubinius, add the gem `rubyzip` to your bundle.
 * Not required with JRuby since it will use the native `Zip` support built into Java
@@ -233,7 +237,7 @@ on the individual slices at the same time.
 Slices take a large and unwieldy batch job and break it up into "bite-size" pieces
 that can be processed a slice at a time by the workers.
 
-Because the job consists of lots of smaller slices it can be paused, resumed, or even aborted as a whole. 
+Because the job consists of lots of smaller slices it can be paused, resumed, or even aborted as a whole.
 If there are any failed slices when the job finishes, they can all be retried by retrying the job itself.
 
 For example, using the default `slice_size` of 100, if the file contains 1,000,000

@@ -2,13 +2,18 @@
 layout: default
 ---
 
+[rocketjob][0] is the next generation background job processing system for [Ruby](http://ruby-lang.org), [JRuby](http://jruby.org) and [Rubinius](http://rubini.us).
+
 Run jobs quickly and reliably in the background. Check on job status and even get its result when
-the job is finished.
+the job is finished. Jobs written in Ruby are easily and reliably executed in the background across a cluster of workers.
 
 <img src="images/rocket/rocket-icon-256x256.png" alt="rocketjob">
 
-[rocketjob][0] is a high performance, reliable, concurrent, background job processing system for [Ruby](http://ruby-lang.org), [JRuby](http://jruby.org) and [Rubinius](http://rubini.us).
-Jobs written in Ruby are easily and reliably executed in the background across a cluster of workers.
+* Visibility
+    * Every job visible in Web UI
+* Reliable
+* High performance
+* High Throughput - Concurrent - fully utilize worker clusters
 
 ### Fire and forget job:
 
