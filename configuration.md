@@ -61,16 +61,29 @@ production:
 
 When running stand-alone without Rails.
 
-Create a new directory for running RocketJob workers:
+Create directories to hold the standalone RocketJob jobs and configuration:
 
 ```
 mkdir standalone
 mkdir standalone/jobs
 mkdir standalone/config
-cd standalone/config
+cd standalone
 ```
 
-Create a `mongo.yml` configuration file with the following contents:
+Create a file called `Gemfile` in the `standalone` directory with the following contents:
+
+```ruby
+gem 'rocketjob'
+gem 'bson_ext', platform: :ruby
+```
+
+Install the gem files:
+
+```
+bundle
+```
+
+Create a file called `mongo.yml` in the `config` sub-directory with the following contents:
 
 ```yaml
 defaults: &defaults
@@ -98,26 +111,6 @@ production:
   username: <%= ENV['MONGO_USERNAME'] %>
   password: <%= ENV['MONGO_PASSWORD'] %>
 ```
-
-Change back to the standalone directory
-
-```
-cd ..
-```
-
-Create a file called `Gemfile` with the following contents:
-
-```ruby
-gem 'rocketjob'
-gem 'bson_ext', platform: :ruby
-```
-
-Install the gem files:
-
-```
-bundle
-```
-
 
 Create a new Job for the workers to process. Create a file called `hello_world_job.rb`
 in the `jobs` directory with the following contents:
@@ -167,4 +160,4 @@ HELLO WORLD
 2015-09-09 22:54:41.979662 I [25215:rocketjob 1] [Job 55f0f0f1a26ec06280000001] (0.1ms) HelloWorldJob -- Completed HelloWorldJob#perform
 ```
 
-## [Next: Architecture ==>](architecture.html)
+### [Next: Architecture ==>](architecture.html)

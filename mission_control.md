@@ -4,12 +4,12 @@ layout: default
 
 ## Mission Control
 
-[Mission Control][1] is the Web user interface to manage [rocketjob][0] jobs. 
+[Mission Control][1] is the Web user interface to manage [rocketjob][0] jobs.
 
 ![Screen shot](images/rjmc.png)
 
-[Mission Control][1] first opens with the list of jobs in the system, listed in reverse chronological order. 
-I.e. With the newest job at the top. 
+[Mission Control][1] first opens with the list of jobs in the system, listed in reverse chronological order.
+I.e. With the newest job at the top.
 
 Each job entry in the list includes:
 
@@ -72,17 +72,17 @@ To see the active workers, select `Menu` on the top right of the screen and sele
 
 ### Managing Workers
 
-Each worker can be managed individually, or to pause all current work, click on `Actions` and select `Pause All`. 
+Each worker can be managed individually, or to pause all current work, click on `Actions` and select `Pause All`.
 
 ![Screen shot](images/rjmc_workers_pause.png)
 
 The workers can be resumed later by clicking on `Actions` and selecting `Resume All`.
 
-To shutdown all workers via [Mission Control][1], click on `Actions` and select `Stop All`. 
+To shutdown all workers via [Mission Control][1], click on `Actions` and select `Stop All`.
 
 ## Installation
 
-[rocketjob mission control][1] is a rails engine that can be added to any existing Rails 4 or 
+[rocketjob mission control][1] is a rails engine that can be added to any existing Rails 4 or
 Rails 5 rails application.
 
 Add the [rocketjob mission control][1] gem to your Gemfile
@@ -99,7 +99,7 @@ Add the following line to `config/routes.rb` in your Rails application:
 mount RocketJobMissionControl::Engine => 'rocketjob'
 ```
 
-## [Next: API ==>](api.html)
+### [Next: API ==>](api.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

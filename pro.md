@@ -306,7 +306,7 @@ job.input.each_failed_record do |record, slice|
 end
 ```
 
-## [Next: Compare ==>](compare.html)
+### [Next: Compare ==>](compare.html)
 
 [0]: http://rocketjob.io
 [1]: mission_control.html

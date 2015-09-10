@@ -8,7 +8,7 @@ layout: default
   <tr>
     <th>Feature</th>
     <th>rocketjob</th>
-    <th>rocketjob-pro</th> 
+    <th>rocketjob-pro</th>
   </tr>
   <tr>
     <td>Priority Based Processing</td>
@@ -117,7 +117,7 @@ layout: default
   </tr>
 </table>
 
-## [Next: Directory Monitor ==>](dirmon.html)
+### [Next: Directory Monitor ==>](dirmon.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

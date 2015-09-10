@@ -63,7 +63,7 @@ end
 ### Job retention
 
 Completed jobs can be retained so that they can be viewed in [Mission Control][1],
-or retained for audit or support reasons. 
+or retained for audit or support reasons.
 
 ```ruby
 class CalculateJob < RocketJob::Job
@@ -73,7 +73,7 @@ class CalculateJob < RocketJob::Job
   end
 
   def perform(value)
-    # Perform work here 
+    # Perform work here
   end
 end
 ```
@@ -93,7 +93,7 @@ class CalculateJob < RocketJob::Job
   end
 
   def perform(value)
-    # The output from this method is stored in the job itself 
+    # The output from this method is stored in the job itself
     { calculation: value * 1000 }
   end
 end
@@ -150,7 +150,7 @@ problem determination.
 
 ### Callbacks
 
-User definable callbacks per Job class. 
+User definable callbacks per Job class.
 
 For example, send an email, or perform other notifications
 
@@ -190,9 +190,9 @@ by another _worker_.
 As workload increases greater throughput can be achieved by adding more servers. Each server
 adds more CPU, Memory and local disk to process more jobs.
 
-[rocketjob][0] scales linearly, meaning doubling the worker servers should double throughput. 
-Bottlenecks tend to be databases, networks, or external suppliers that are called during job 
-processing. Additional database slaves can be added to scale for example, MySQL, Postgres, 
+[rocketjob][0] scales linearly, meaning doubling the worker servers should double throughput.
+Bottlenecks tend to be databases, networks, or external suppliers that are called during job
+processing. Additional database slaves can be added to scale for example, MySQL, Postgres,
 along with sending database reads to the background job workers.
 
 ### High performance logging
@@ -267,7 +267,7 @@ For other platforms, see [MongoDB Downloads](https://www.mongodb.org/downloads)
  * JRuby 1.7, 9.0.0.0, or greater
  * Rubinius 2.5, or greater
 
-## [Next: Mission Control ==>][1]
+### [Next: Mission Control ==>][1]
 
 [0]: http://rocketjob.io
 [1]: mission_control.html
