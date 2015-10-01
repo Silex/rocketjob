@@ -4,7 +4,8 @@ layout: default
 
 ## Mission Control
 
-[Mission Control][1] is the Web user interface to manage [rocketjob][0] jobs.
+
+[Mission Control][1] is the web interface for viewing and managing [rocketjob][0] jobs.
 
 ![Screen shot](images/rjmc.png)
 
@@ -31,7 +32,8 @@ Each job entry in the list includes:
 * Retry failed jobs
 * Abort, or fail queued or running jobs
 * Destroy a completed or aborted job
-
+* By separating [Mission Control][1] into a separate gem means it does not
+  have to be loaded everywhere [rocketjob][0] jobs are defined or run.
 
 ### Managing Jobs
 
@@ -80,26 +82,7 @@ The workers can be resumed later by clicking on `Actions` and selecting `Resume 
 
 To shutdown all workers via [Mission Control][1], click on `Actions` and select `Stop All`.
 
-## Installation
-
-[rocketjob mission control][1] is a rails engine that can be added to any existing Rails 4 or
-Rails 5 rails application.
-
-Add the [rocketjob mission control][1] gem to your Gemfile
-
-```ruby
-   gem 'rocketjob_mission_control', '~> 0.10'
-```
-
-Now run `bundle` to install [rocketjob mission control][1]
-
-Add the following line to `config/routes.rb` in your Rails application:
-
-```ruby
-mount RocketJobMissionControl::Engine => 'rocketjob'
-```
-
-### [Next: API ==>](api.html)
+### [Next: Installation ==>](installation.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

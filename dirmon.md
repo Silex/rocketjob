@@ -15,26 +15,37 @@ programmatically, or via [`rocketjob mission control`][1], the web management in
 Example, creating a `DirmonEntry`
 
 ```ruby
-RocketJob::DirmonEntry.new(
-  path:         'path_to_monitor/*',
-  job:          'Jobs::TestJob',
-  arguments:    [ { input: 'yes' } ],
-  properties:   { priority: 23, perform_method: :event },
+entry = RocketJob::DirmonEntry.create!(
+  pattern:           '/path_to_monitor/*',
+  job_class_name:    'MyFileProcessJob',
   archive_directory: '/exports/archive'
 )
 ```
 
+When a Dirmon entry is creating it is initially `disabled` and needs to be enabled before
+DirmonJob will start processing it:
+
+```ruby
+entry.enable!
+```
+
+Active dirmon entries can also be disabled:
+
+```ruby
+entry.disable!
+```
+
 The attributes of DirmonEntry:
 
-* path <String>
+* `pattern` <String>
     * Wildcard path to search for files in.
       For details on valid path values, see: http://ruby-doc.org/core-2.2.2/Dir.html#method-c-glob
     * Examples:
         * input_files/process1/*.csv*
         * input_files/process2/**/*
-* job <String>
+* `job_class_name` <String>
     * Name of the job to start
-* arguments <Array>
+* `arguments` <Array>
     * Any user supplied arguments for the method invocation
       All keys must be UTF-8 strings. The values can be any valid BSON type:
         * Integer
@@ -50,7 +61,7 @@ The attributes of DirmonEntry:
         * Regular Expression
         * _Note_: Date is not supported, convert it to a UTC time
 
-* properties <Hash>
+* `properties` <Hash>
     * Any job properties to set.
         * Example, override the default job priority:
 
@@ -58,7 +69,7 @@ The attributes of DirmonEntry:
 { priority: 45 }
 ```
 
-* archive_directory
+* `archive_directory`
     * Archive directory to move the file to before the job is started. It is important to
       move the file before it is processed so that it is not picked up again for processing.
       If no archive_directory is supplied the file will be moved to a folder called '_archive'
@@ -66,46 +77,39 @@ The attributes of DirmonEntry:
       If the `path` above is a relative path the relative path structure will be
       maintained when the file is moved to the archive path.
 
-* enabled <Boolean>
-    * Allow a monitoring entry to be disabled so that it is ignored by `DirmonJob`.
-      This feature is useful for operations to temporarily stop processing files
-      from a particular source, without having to completely delete the `DirmonEntry`.
-      It can also be used to create a `DirmonEntry` without it becoming immediately
-      active.
-
-
 ### Starting the directory monitor
 
 The directory monitor job only needs to be started once per installation by running
 the following code:
 
 ```ruby
-RocketJob::Jobs::DirmonJob.start
+RocketJob::Jobs::DirmonJob.create!
 ```
 
 The polling interval to check for new files can be modified when starting the job
 for the first time by adding:
 
 ```ruby
-RocketJob::Jobs::DirmonJob.start do |job|
-  job.check_seconds = 180
-end
+RocketJob::Jobs::DirmonJob.create!(check_seconds: 180)
 ```
 
 The default priority for `DirmonJob` is 40, to increase it's priority:
 
 ```ruby
-RocketJob::Jobs::DirmonJob.start do |job|
-  job.check_seconds = 300
-  job.priority      = 25
-end
+RocketJob::Jobs::DirmonJob.create!(
+  check_seconds: 180,
+  priority:      25
+)
 ```
 
 Once `DirmonJob` has been started it's priority and check interval can be
 changed at any time as follows:
 
 ```ruby
-RocketJob::Jobs::DirmonJob.first.set(check_seconds: 180, priority: 20)
+RocketJob::Jobs::DirmonJob.first.update_attributes(
+  check_seconds: 180,
+  priority:      20
+)
 ```
 
 ### High Availability
@@ -127,7 +131,7 @@ If an exception occurs while running `DirmonJob`, a failed job instance will rem
 in the job list for problem determination. The failed job cannot be restarted and
 should be destroyed when no longer needed.
 
-### [Next: Configuration ==>](configuration.html)
+### [Next: Architecture ==>](architecture.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

@@ -19,8 +19,12 @@ the job is finished. Jobs written in Ruby are easily and reliably executed in th
 
 ```ruby
 class ImportJob < RocketJob::Job
-  def perform(value)
+  # Create a property called `file_name` of type String
+  key :file_name, String
+
+  def perform
     # Perform work here, such as processing a large file
+    puts "The file_name is #{file_name}"
   end
 end
 ```
@@ -28,7 +32,7 @@ end
 Queue the job for processing:
 
 ```ruby
-ImportJob.perform_later("file.csv")
+ImportJob.create!(file_name: 'file.csv')
 ```
 
 If the job fails it will be visible in [Mission Control][1] and be retried.
@@ -38,10 +42,11 @@ If the job fails it will be visible in [Mission Control][1] and be retried.
 To run the job in the future, use `run_at`:
 
 ```ruby
-ImportJob.perform_later("file.csv") do |job|
+ImportJob.create!(
+  file_name: 'file.csv',
   # Only run this job 2 hours from now
-  job.run_at = 2.hours.from_now
-end
+  run_at: 2.hours.from_now
+)
 ```
 
 ### High priority jobs
@@ -54,10 +59,11 @@ Sometimes we want a specific instance of the job to have a higher priority than
 others in the system:
 
 ```ruby
-ImportJob.perform_later("file.csv") do |job|
+ImportJob.create!(
+  file_name: 'file.csv',
   # Give this job a higher priority so that it will jump the queue
-  job.priority = 5
-end
+  priority: 5
+)
 ```
 
 ### Job retention
@@ -72,7 +78,7 @@ class CalculateJob < RocketJob::Job
     job.destroy_on_complete = false
   end
 
-  def perform(value)
+  def perform
     # Perform work here
   end
 end
@@ -92,9 +98,11 @@ class CalculateJob < RocketJob::Job
     job.collect_output      = true
   end
 
-  def perform(value)
+  key :count, Integer
+
+  def perform
     # The output from this method is stored in the job itself
-    { calculation: value * 1000 }
+    { calculation: count * 1000 }
   end
 end
 ```
@@ -102,7 +110,7 @@ end
 Queue the job for processing:
 
 ```ruby
-job = CalculateJob.perform_later(24)
+job = CalculateJob.create!(count: 24)
 
 # Continue doing other work while the job runs
 
@@ -137,10 +145,11 @@ other higher priority jobs and are not able to process this job by its expiry
 time, then the job will be discarded without processing:
 
 ```ruby
-ImportJob.perform_later("file.csv") do |job|
+ImportJob.create!(
+  file_name: 'file.csv',
   # Don't process this job if it is queued for longer than 15 minutes
-  job.expires_at = 15.minutes.from_now
-end
+  expires_at: 15.minutes.from_now
+)
 ```
 
 ### Error Handling
@@ -192,12 +201,16 @@ adds more CPU, Memory and local disk to process more jobs.
 
 [rocketjob][0] scales linearly, meaning doubling the worker servers should double throughput.
 Bottlenecks tend to be databases, networks, or external suppliers that are called during job
-processing. Additional database slaves can be added to scale for example, MySQL, Postgres,
-along with sending database reads to the background job workers.
+processing.
+
+Additional database slaves can be added to scale for example, MySQL, and/or Postgres.
+Then configuring the job workers to read from the slaves helps distribute the load. For example, we use
+[ActiveRecord Slave](https://github.com/reidmorrison/active_record_slave) to efficiently redirect
+ActiveRecord MySQL reads to multiple slave servers.
 
 ### High performance logging
 
-Supports sending log messages, exceptions, and errors to one or more of:
+Supports sending log messages, exceptions, and errors simultaneously to one or more of:
 
 * File
 * Bugsnag
@@ -207,65 +220,41 @@ Supports sending log messages, exceptions, and errors to one or more of:
 * Syslog (TCP, UDP, & local)
 * Any user definable target via custom appenders
 
+To remove the usual impact of logging, the log writing is performed in a separate thread.
+In this way the time it takes to write to one or logging destinations does _not_ slow down
+active worker threads.
+
 ## Start a worker
 
-To start a [rocketjob][0] worker process in which to run worker threads:
+To start a [rocketjob][0] worker process in which to run worker threads, run the following command
+from your projects command line directory:
+
+```ruby
+rocketjob
+```
+
+Or, if using Bundler:
+
+```ruby
+bundle exec rocketjob
+```
+
+Or, if you are using Bundler binstubs:
 
 ```ruby
 bin/rocketjob
 ```
 
-## Mission Control
+### Compatibility
 
-[Mission Control][1] is the web interface for viewing and managing [rocketjob][0] jobs.
-It is a Rails Engine that can be loaded into any Rails project.
-[Mission Control][1] can also be run stand-alone in a shell Rails application.
-
-By separating [Mission Control][1] into a separate gem means it does not
-have to be loaded everywhere [rocketjob][0] jobs are defined or run.
-
-## Installation
-
-Add the [rocketjob][0] gem to your Gemfile
-
-```ruby
-   gem 'rocketjob'
-```
-
-Now run `bundle` to install [rocketjob][0].
-
-If not running `bundler`, just run:
-
-```
-   gem install rocketjob
-```
-
-### MongoDB
-
-[rocketjob][0] stores jobs in the open source data store [MongoDB][3].
-Installing [MongoDB][3] is as easy as installing redis.
-
-Installing [MongoDB][3] on a Mac running homebrew:
-
-```
-brew install mongodb
-```
-
-Then follow the on-screen instructions to start [MongoDB][3].
-
-For other platforms, see [MongoDB Downloads](https://www.mongodb.org/downloads)
+ * Ruby 1.9.3, 2.0, 2.1, 2.2, or greater
+ * JRuby 1.7, 9.0.1.0, or greater
+ * Rubinius 2.5, or greater
 
 ### Dependencies
 
-[rocketjob][0] requires:
-
-* MongoDB V2.6 or greater
-
-### Compatibility
-
- * Ruby 1.9, 2.0, 2.1, 2.2, or greater
- * JRuby 1.7, 9.0.0.0, or greater
- * Rubinius 2.5, or greater
+[rocketjob][0] stores job data in the open source NOSQL data store [MongoDB][3].
+[MongoDB][3] V2.6 or greater is required.
 
 ### [Next: Mission Control ==>][1]
 

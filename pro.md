@@ -27,20 +27,23 @@ end
 Queue the job for processing:
 
 ```ruby
-job = ReverseJob.perform_later do |job|
-  # Words would come from a database query, file, etc.
-  words = %w(these are some words that are to be processed at the same time on many workers)
+# Words would come from a database query, file, etc.
+words = %w(these are some words that are to be processed at the same time on many workers)
 
-  # Load words as individual records for processing into the job
-  job.upload do |records|
-    words.each do |word|
-      record << word
-    end
+job = ReverseJob.new
+
+# Load words as individual records for processing into the job
+job.upload do |records|
+  words.each do |word|
+    records << word
   end
 end
+
+# Queue the job for processing
+job.save!
 ```
 
-### Batch processing and collect results
+### Collect results
 
 Collect the output from running a batch
 
@@ -66,17 +69,20 @@ end
 Queue the job for processing:
 
 ```ruby
-job = ReverseJob.perform_later do |job|
-  # Words would come from a database query, file, etc.
-  words = %w(these are some words that are to be processed at the same time on many workers)
+# Words would come from a database query, file, etc.
+words = %w(these are some words that are to be processed at the same time on many workers)
 
-  # Load words as records for processing into the job
-  job.upload do |records|
-    words.each do |word|
-      record << word
-    end
+job = ReverseJob.new
+
+# Load words as individual records for processing into the job
+job.upload do |records|
+  words.each do |word|
+    records << word
   end
 end
+
+# Queue the job for processing
+job.save!
 ```
 
 Processing the output from the job:
@@ -123,10 +129,10 @@ end
 Queue the job for processing:
 
 ```ruby
-job = ReverseJob.perform_later do |job|
-  # Upload a file into the job for processing
-  job.upload('myfile.txt')
-end
+job = ReverseJob.new
+# Upload a file into the job for processing
+job.upload('myfile.txt')
+job.save!
 ```
 
 When complete, download the results of the batch into a file:
@@ -267,8 +273,8 @@ class MultiFileJob < RocketJob::SlicedJob
   rocket_job do |job|
     job.collect_output      = true
     job.destroy_on_complete = false
-    # Register additional output categories for the job
-    job.output_categories   = [ :invalid ]
+    # Register additional `:invalid` output category for this job
+    job.output_categories   = [ :main, :invalid ]
   end
 
   def perform(line)
@@ -276,7 +282,7 @@ class MultiFileJob < RocketJob::SlicedJob
       # The line is too short, send it to the invalid output collection
       Result.new(line, :invalid)
     else
-      # Reverse the line
+      # Reverse the line ( default output goes to the :main output collection )
       line.reverse
     end
   end
@@ -290,7 +296,7 @@ When complete, download the results of the batch into 2 files:
 job.download('reversed.txt.gz')
 
 # Download the invalid results to a separate file
-job(:invalid).download('invalid.txt.gz')
+job.output(:invalid).download('invalid.txt.gz')
 ```
 
 ## Error Handling
@@ -305,6 +311,9 @@ job.input.each_failed_record do |record, slice|
   p slice.exception
 end
 ```
+
+Once all slices have been processed and there are only failed slices left, then the job as a whole
+is failed.
 
 ### [Next: Compare ==>](compare.html)
 
