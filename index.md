@@ -85,69 +85,9 @@ ImportJob.create!(file_name: 'file.csv')
 
 Monitor and manage the job via [Rocket Job Mission Control][1].
 
-### Reliable
+![Screen shot](images/rjmc_job.png)
 
-If a worker process crashes while processing a job, the job remains in the queue and is never lost.
-When the _worker_ instance is destroyed / cleaned up its running jobs are re-queued and will be processed
-by another _worker_.
-
-### Scalable
-
-As workload increases greater throughput can be achieved by adding more servers. Each server
-adds more CPU, Memory and local disk to process more jobs.
-
-[Rocket Job][0] scales linearly, meaning doubling the worker servers should double throughput.
-Bottlenecks tend to be databases, networks, or external suppliers that are called during job
-processing.
-
-Additional database slaves can be added to scale for example, MySQL, and/or Postgres.
-Then configuring the job workers to read from the slaves helps distribute the load. For example, we use
-[ActiveRecord Slave](https://github.com/reidmorrison/active_record_slave) to efficiently redirect
-ActiveRecord MySQL reads to multiple slave servers.
-
-### High performance logging
-
-Supports sending log messages, exceptions, and errors simultaneously to one or more of:
-
-* File
-* Bugsnag
-* MongoDB
-* NewRelic
-* Splunk
-* Syslog (TCP, UDP, & local)
-* Any user definable target via custom appenders
-
-To remove the usual impact of logging, the log writing is performed in a separate thread.
-In this way the time it takes to write to one or logging destinations does _not_ slow down
-active worker threads.
-
-## Start a Worker
-
-Start a [Rocket Job][0] worker process:
-
-```ruby
-rocketjob
-```
-
-Or, if using Bundler:
-
-```ruby
-bundle exec rocketjob
-```
-
-Or, if you are using Bundler binstubs:
-
-```ruby
-bin/rocketjob
-```
-
-### Compatibility
-
-* Ruby 1.9.3, 2.0, 2.1, 2.2, 2.3, or greater
-* JRuby 1.7, 9.0.4.0, or greater
-* [MongoDB][3] V2.6 or greater is required.
-
-### [Next: Mission Control ==>][1]
+### [Next: Compare ==>](compare.html)
 
 [0]: http://rocketjob.io
 [1]: mission_control.html

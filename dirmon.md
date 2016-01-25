@@ -22,7 +22,7 @@ entry = RocketJob::DirmonEntry.create!(
 )
 ```
 
-When a Dirmon entry is creating it is initially `disabled` and needs to be enabled before
+When a Dirmon entry is created it is initially `disabled` and needs to be enabled before
 DirmonJob will start processing it:
 
 ```ruby
@@ -131,8 +131,9 @@ If an exception occurs while running `DirmonJob`, a failed job instance will rem
 in the job list for problem determination. The failed job cannot be restarted and
 should be destroyed when no longer needed.
 
-### [Next: Architecture ==>](architecture.html)
+### [Next: Support ==>](support.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control
 [2]: http://reidmorrison.github.io/semantic_logger
+[3]: https://github.com/rocketjob/rocketjob

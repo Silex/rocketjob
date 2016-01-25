@@ -4,10 +4,18 @@ layout: default
 
 ## Installation
 
+[Rocket Job][0] can run with or without Rails. Instructions for Rails and Standalone installations are listed below.
+
+### Compatibility
+
+* Ruby 1.9.3, 2.0, 2.1, 2.2, 2.3, or greater
+* JRuby 1.7, 9.0.4.0, or greater
+* [MongoDB][3] V2.6 or greater is required.
+
 ### MongoDB
 
 [Rocket Job][0] stores jobs in the open source data store [MongoDB][3].
-Installing [MongoDB][3] is as easy as installing redis.
+Installing [MongoDB][3] is relatively straight forward.
 
 For example, installing [MongoDB][3] on a Mac running homebrew:
 
@@ -19,21 +27,9 @@ Then follow the on-screen instructions to start [MongoDB][3].
 
 For other platforms, see [MongoDB Downloads](https://www.mongodb.org/downloads)
 
-## New Rails installation
+## Rails Installation
 
-Create a new Rails application, if one does not exist already:
-
-```
-gem install rails
-rails new myapp
-cd myapp
-```
-
-Once the rails application has been created follow the instructions below for an existing rails application.
-
-## Configure existing Rails application
-
-Add the following lines to the bottom of the file `Gemfile`:
+For an existing Rails installation, add the following lines to the bottom of the file `Gemfile`:
 
 ```ruby
 gem 'rocketjob'
@@ -111,7 +107,7 @@ bin/rails s
 
 Open a browser and navigate to the local [Rocket Job Mission Control](http://localhost:3000/rocketjob)
 
-## Standalone Configuration
+## Standalone Installation
 
 When running stand-alone without Rails.
 
@@ -218,7 +214,7 @@ HELLO WORLD
 
 ### Installing RocketJob Mission Control (Web Interface)
 
-[rocketjob mission control][1] is the web interface for [Rocket Job][0].
+[Rocket Job Mission Control][1] is the web interface for [Rocket Job][0].
 In order to install [Rocket Job Mission Control][1] in a stand-alone environment, we need to
 host it in a "shell" rails application as follows:
 
@@ -261,7 +257,7 @@ bin/rails s
 
 Open a browser and navigate to the local [Rocket Job Mission Control](http://localhost:3000/rocketjob)
 
-### [Next: Guide ==>](api.html)
+### [Next: Guide ==>](guide.html)
 
 [0]: http://rocketjob.io
 [1]: mission_control.html

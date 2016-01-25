@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## Programmers Guide
+## Rocket Job Programmers Guide
 
 ### Priority Based Processing
 
@@ -368,6 +368,22 @@ MyJob.create!(file_name: 'abc.csv')
 # => MongoMapper::DocumentNotValid: Validation failed: State Another instance of this job is already queued or running
 ```
 
+### High performance logging
+
+Supports sending log messages, exceptions, and errors simultaneously to one or more of:
+
+* File
+* Bugsnag
+* MongoDB
+* NewRelic
+* Splunk
+* Syslog (TCP, UDP, & local)
+* Any user definable target via custom appenders
+
+To remove the usual impact of logging, the log writing is performed in a separate thread.
+In this way the time it takes to write to one or logging destinations does _not_ slow down
+active worker threads.
+
 ### Concurrency
 
 [Rocket Job][0] uses a thread per worker. Benefits of this approach:
@@ -413,11 +429,31 @@ modify-in-place feature in [MongoDB][6] called [`find_and_modify`](http://docs.m
 that allows jobs to be efficiently assigned to any one of hundreds of available
 workers without the locking issues that befall relational databases.
 
+### Reliable
+
+If a worker process crashes while processing a job, the job remains in the queue and is never lost.
+When the _worker_ instance is destroyed / cleaned up its running jobs are re-queued and will be processed
+by another _worker_.
+
+### Scalable
+
+As workload increases greater throughput can be achieved by adding more servers. Each server
+adds more CPU, Memory and local disk to process more jobs.
+
+[Rocket Job][0] scales linearly, meaning doubling the worker servers should double throughput.
+Bottlenecks tend to be databases, networks, or external suppliers that are called during job
+processing.
+
+Additional database slaves can be added to scale for example, MySQL, and/or Postgres.
+Then configuring the job workers to read from the slaves helps distribute the load.
+Use [ActiveRecord Slave](https://github.com/rocketjob/active_record_slave) to efficiently redirect
+ActiveRecord MySQL reads to multiple slave servers.
+
 ## Reference
 
 * [API Reference](http://www.rubydoc.info/gems/rocketjob/)
 
-### [Next: Rocket Job Pro ==>](pro.html)
+### [Next: Rocket Job Pro Guide ==>](pro_guide.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

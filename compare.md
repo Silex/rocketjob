@@ -19,7 +19,7 @@ layout: default
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
-    <td align="center"><img src="images/info.png" alt="?"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
   </tr>
   <tr>
     <td>Reliable</td>
@@ -205,7 +205,7 @@ layout: default
   <tr>
     <th>Yes</th>
     <th>No</th>
-    <th>Requires Add-on</br>or limited</th>
+    <th>Requires Add-on</br>or is limited</th>
   </tr>
   <tr>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
@@ -215,10 +215,8 @@ layout: default
 </table>
 
 
-### [Next: Directory Monitor ==>](dirmon.html)
+### [Next: Mission Control ==>](mission_control.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control
 [2]: pro.html
-[3]: http://sidekiq.org
-[4]: http://sidekiq.org
