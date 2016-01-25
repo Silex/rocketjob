@@ -6,7 +6,7 @@ layout: default
 
 ### MongoDB
 
-[rocketjob][0] stores jobs in the open source data store [MongoDB][3].
+[Rocket Job][0] stores jobs in the open source data store [MongoDB][3].
 Installing [MongoDB][3] is as easy as installing redis.
 
 For example, installing [MongoDB][3] on a Mac running homebrew:
@@ -41,6 +41,12 @@ gem 'bson_ext', platform: :ruby
 gem 'rails_semantic_logger'
 ```
 
+Install gems:
+
+```
+bundle install
+```
+
 Generate Mongo Configuration file:
 
 ```
@@ -62,7 +68,7 @@ spring processes to get them to reload:
 bin/spring stop
 ```
 
-Start a rocketjob worker process:
+Start a Rocket Job worker process:
 
 ```
 bundle exec rocketjob
@@ -76,22 +82,34 @@ bin/rocketjob
 
 ### Installing RocketJob Mission Control (Web Interface)
 
-[rocketjob mission control][1] is the web interface for [rocketjob][0].
+[Rocket Job Mission Control][1] is the web interface for [Rocket Job][0].
 It is a rails engine that can be added to any existing Rails 4 or Rails 5 rails application.
 
-Add the [rocketjob mission control][1] gem to your Gemfile
+Add the [Rocket Job Mission Control][1] gem to your Gemfile
 
 ```ruby
-   gem 'rocketjob_mission_control'
+gem 'rocketjob_mission_control'
 ```
 
-Now run `bundle` to install [rocketjob mission control][1]
+Install gems:
+
+```
+bundle install
+```
 
 Add the following line to `config/routes.rb` in your Rails application:
 
 ```ruby
 mount RocketJobMissionControl::Engine => 'rocketjob'
 ```
+
+Start the Rails server:
+
+```
+bin/rails s
+```
+
+Open a browser and navigate to the local [Rocket Job Mission Control](http://localhost:3000/rocketjob)
 
 ## Standalone Configuration
 
@@ -200,8 +218,8 @@ HELLO WORLD
 
 ### Installing RocketJob Mission Control (Web Interface)
 
-[rocketjob mission control][1] is the web interface for [rocketjob][0].
-In order to install [rocketjob mission control][1] in a stand-alone environment, we need to
+[rocketjob mission control][1] is the web interface for [Rocket Job][0].
+In order to install [Rocket Job Mission Control][1] in a stand-alone environment, we need to
 host it in a "shell" rails application as follows:
 
 Create shell application:
@@ -221,7 +239,7 @@ gem 'rails_semantic_logger'
 gem 'rocketjob_mission_control'
 ```
 
-Now run `bundle` to install [rocketjob mission control][1]
+Now run `bundle` to install [Rocket Job Mission Control][1]
 
 Add the following line to `config/routes.rb`:
 
@@ -235,15 +253,15 @@ Re-load spring:
 bin/spring stop
 ```
 
-Start the stand-alone [rocketjob mission control][1]:
+Start the stand-alone [Rocket Job Mission Control][1]:
 
 ```
 bin/rails s
 ```
 
-Open a browser and navigate to the local [rocketjob mission control](http://localhost:3000/rocketjob)
+Open a browser and navigate to the local [Rocket Job Mission Control](http://localhost:3000/rocketjob)
 
-### [Next: API ==>](api.html)
+### [Next: Guide ==>](api.html)
 
 [0]: http://rocketjob.io
 [1]: mission_control.html

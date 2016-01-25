@@ -2,9 +2,247 @@
 layout: default
 ---
 
-### Application Programming Interface
+## Programmers Guide
 
-Aside from being able to see and change jobs through the [rocketjob mission control][1]
+### Priority Based Processing
+
+Jobs are processed based on the priority specified when the job is defined.
+By default jobs have a priority of 50 and can range between 1 and 100, with 1 being the highest priority.
+
+Priority based processing ensures that the workers are utilized to capacity, while meeting business
+priorities, and without requiring any manual intervention or tuning of worker queues.
+
+Example: Set the default priority for a job class:
+
+```ruby
+ImportJob.create!(
+  file_name: 'file.csv',
+  # Give this job a higher priority so that it will jump the queue
+  priority:  5
+)
+```
+
+The priority can also be changed on a per job basis at runtime via [Rocket Job Mission Control][1].
+
+### Process the job at a later time
+
+To run the job in the future, set `run_at` to a future time:
+
+```ruby
+ImportJob.create!(
+  file_name: 'file.csv',
+  # Only run this job 2 hours from now
+  run_at:    2.hours.from_now
+)
+```
+
+### Job retention
+
+On completion jobs usually disappear. Jobs can be retained and viewed in [Mission Control][1].
+
+```ruby
+class CalculateJob < RocketJob::Job
+  rocket_job do |job|
+    # Retain the job when it completes
+    job.destroy_on_complete = false
+  end
+
+  def perform
+    # Perform work here
+  end
+end
+```
+
+### Job Result
+
+When a job runs its result is usually the effect it has on the database, emails sent, etc. Sometimes
+it is useful to keep the result in the job itself. The result can be used to take other actions, or to display
+to an end user.
+
+The `result` is a Hash that can contain a numeric result, string, array of values, or even a binary image, up to a
+total document size of 16MB.
+
+```ruby
+class CalculateJob < RocketJob::Job
+  rocket_job do |job|
+    # Don't destroy the job when it completes
+    job.destroy_on_complete = false
+    # Collect the output from the perform method
+    job.collect_output      = true
+  end
+
+  key :count, Integer
+
+  def perform
+    # The output from this method is stored in the job itself
+    { calculation: count * 1000 }
+  end
+end
+```
+
+Queue the job for processing:
+
+```ruby
+job = CalculateJob.create!(count: 24)
+```
+
+Continue doing other work while the job runs, and display its result on completion:
+
+```ruby
+if job.reload.completed?
+  puts "Job result: #{job.result}"
+end
+```
+
+### Job Status
+
+Status can be checked at any time:
+
+```ruby
+# Update the job's in memory status
+job.reload
+
+# Current state ( For example: :queued, :running, :completed. etc. )
+puts "Job is: #{job.state}"
+
+# Complete state information as displayed in mission control
+puts "Full job status: #{job.status.inspect}"
+```
+
+### Expired jobs
+
+Sometimes queued jobs are no longer business relevant if processing has not
+started by a specific date and time.
+
+The system can queue a job for processing, but if the workers are too busy with
+other higher priority jobs and are not able to process this job by its expiry
+time, then the job will be discarded without processing:
+
+```ruby
+ImportJob.create!(
+  file_name: 'file.csv',
+  # Don't process this job if it is queued for longer than 15 minutes
+  expires_at: 15.minutes.from_now
+)
+```
+
+### Exception Handling
+
+The exception and complete backtrace is stored in the job on failure to
+aid in problem determination.
+
+```ruby
+if job.reload.failed?
+  puts "Job failed with: #{job.exception.klass}: #{job.exception.message}"
+  puts "Backtrace:"
+  puts job.exception.backtrace.join("\n")
+end
+```
+
+### Callbacks
+
+Callbacks are available at many points in the job workflow process. These callbacks can be used
+to add custom behavior at each of the points:
+
+Perform callbacks:
+
+* before_perform
+* after_perform
+* around_perform
+
+Persistence related callbacks:
+
+* after_initialize
+* before_validation
+* after_validation
+* before_save
+* before_create
+* after_create
+* after_save
+
+Event callbacks:
+
+* before_start
+* after_start
+* before_complete
+* after_complete
+* before_fail
+* after_fail
+* before_retry
+* after_retry
+* before_pause
+* after_pause
+* before_resume
+* after_resume
+* before_abort
+* after_abort
+
+Example: Send an email after a job starts, completes, fails, or aborts.
+
+```ruby
+class MyJob < RocketJob::Job
+  key :email_recipients, Array
+
+  after_start :email_started
+  after_fail :email_failed
+  after_abort :email_aborted
+  after_complete :email_completed
+
+  def perform
+    puts "The file_name is #{file_name}"
+  end
+
+  private
+
+  # Send an email when the job starts
+  def email_started
+    MyJob.started(email_recipients, self).deliver
+  end
+
+  def email_failed
+    MyJob.failed(email_recipients, self).deliver
+  end
+
+  def email_aborted
+    MyJob.aborted(email_recipients, self).deliver
+  end
+
+  def email_completed
+    MyJob.completed(email_recipients, self).deliver
+  end
+end
+```
+
+Callbacks can be used to insert "middleware" into specific job classes, or for all jobs.
+
+The `after_fail` callback can be used to automatically retry failed jobs. For example, retry the job again
+in 10 minutes, or retry immediately for up to 3 times, etc...
+
+### Validations
+
+The usual [Rails validations](http://guides.rubyonrails.org/active_record_validations.html)
+are available since they are exposed by ActiveModel.
+
+Example of `presence` and `inclusion` validations:
+
+```ruby
+class Job
+  include MongoMapper::Document
+  key :priority, Integer
+
+  validates :priority, inclusion: 1..100
+end
+
+class SimpleJob < Job
+  key :login, String
+
+  validates_presence_of :login
+end
+```
+
+### Lookups
+
+Aside from being able to see and change jobs through the [Rocket Job Mission Control][1]
 web interface it is often useful, and even highly desirable to be able to access
 the job programmatically while it is running.
 
@@ -74,92 +312,9 @@ and thereby exposes a very familiar API for anyone familiar with Rails.
 Since everything about this job is held in this one document, all
 details about the job are accessible programmatically.
 
-### Validations
+### Extensibility
 
-The usual [Rails validations](http://guides.rubyonrails.org/active_record_validations.html)
-are available since they are exposed by ActiveModel.
-
-Example of `presence` and `inclusion` validations:
-
-```ruby
-class Job
-  include MongoMapper::Document
-  key :priority, Integer
-
-  validates :priority, inclusion: 1..100
-end
-
-class SimpleJob < Job
-  key :login, String
-
-  validates_presence_of :login
-end
-```
-
-### Extensibility - Inheritance
-
-Specialized jobs can be created using existing behavior from other jobs. This allows base job classes
-to be created that other classes can then inherit from instead of directly from `RocketJob::Job`.
-
-For example, create a base class called `FileJob` with behavior that is useful to other jobs:
-
-```ruby
-# Abstract class to add custom behavior
-class FileJob < RocketJob::Job
-  # Add a custom property that all file jobs can use
-  key :file_name, String
-
-  def before_perform
-    # Custom file specific behavior, for example upload a file for processing
-    puts file_name
-  end
-end
-```
-
-Create a job that includes the above specialized behavior by deriving it from `FileJob`:
-
-```ruby
-# MyJob now inherits the behavior in FileJob
-class MyJob < FileJob
-  def perform
-    # process data
-  end
-end
-```
-
-This approach follows inheritance hierarchies allowing any job's behavior to be shared or
-specialized in any way without affecting jobs that do not require or want that behavior.
-
-Not only can `FileJob` modify the behavior of what is processed, it has full access to
-all workflow related events, to take action when an event occurs. `FileJob` can also
-change state transitions if required.
-
-For example:
-
-```ruby
-# Abstract class with custom behavior
-class FileJob < RocketJob::Job
-  # Add a custom property that all file jobs can use
-  key :file_name, String
-
-  def before_perform
-    # Custom file specific behavior, for example upload a file for processing
-    # file_name is available in any method in this job:
-    puts file_name
-  end
-
-  def before_fail
-    # Send an email, or take other action when a job fails
-  end
-end
-```
-
-[rocketjob-pro][4] makes extensive use of the above extensibility features to create a powerful
-batch processing solution built on top of `RocketJob::Job`.
-
-### Extensibility - Mix-ins
-
-Sometimes specific behavior can be created and then mixed into a job when needed.
+Custom behavior can be mixed into a job.
 
 For example create a mix-in that uses a validation to ensure that only one instance
 of a job is running at a time:
@@ -213,13 +368,59 @@ MyJob.create!(file_name: 'abc.csv')
 # => MongoMapper::DocumentNotValid: Validation failed: State Another instance of this job is already queued or running
 ```
 
+### Concurrency
+
+[Rocket Job][0] uses a thread per worker. Benefits of this approach:
+
+* Uses less memory than forked processes.
+    * Compiled ruby code is declared per process.
+    * Can cache data in memory that is shared by several worker threads.
+* More efficient and performs faster than forking processes.
+* A single management thread can monitor all the worker threads, and perform heartbeats for
+  the entire process.
+
+Each worker is completely independent of each other so that it can run as fast as is possible with Ruby.
+
+Concurrency Notes:
+
+* Avoid modifying any global variables since they could be accessed by 2 worker threads at the same time.
+    * Only update instance variables, or use [Sync Attr][5].
+    * Verify that any cache being used is thread-safe.
+* To lazy load class variables use [Sync Attr][5].
+    * For example, loading configuration files etc.
+
+### Architecture
+
+RocketJob uses [MongoDB][6] to do "in-place" processing of a job. A job is only created
+once and stored entirely as a single document in [MongoDB][6]. [MongoDB][6] is highly concurrent,
+allowing all CPU's to be used if needed to scale out workers. [MongoDB][6] is not
+only memory resident for performance, it can also write older data to disk, or
+when there is not enough physical memory to hold all of the data.
+
+This means that all information relating to a job is held in one document:
+
+* State: queued, running, failed, aborted, or completed
+* Percent Complete
+* User defined attributes
+* etc..
+
+The status of any job is immediately visible in the [Rocket Job Mission Control][1] web
+interface, without having to update some other data store since the job only lives
+in one place.
+
+The single document approach for the job is possible due to a very efficient
+modify-in-place feature in [MongoDB][6] called [`find_and_modify`](http://docs.mongodb.org/manual/reference/command/findAndModify/)
+that allows jobs to be efficiently assigned to any one of hundreds of available
+workers without the locking issues that befall relational databases.
+
 ## Reference
 
 * [API Reference](http://www.rubydoc.info/gems/rocketjob/)
 
-### [Next: rocketjob-pro ==>](pro.html)
+### [Next: Rocket Job Pro ==>](pro.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control
 [4]: http://rocketjob.io/pro
+[5]: https://github.com/reidmorrison/sync_attr
 

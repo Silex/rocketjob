@@ -2,29 +2,48 @@
 layout: default
 ---
 
-### Compare [rocketjob][0] features with [rocketjob-pro][2], Resque, and Sidekiq
+## Compare Rocket Job features:
 
 <table id="compare">
   <tr>
     <th>Feature</th>
-    <th>rocketjob</th>
-    <th>rocketjob-pro</th>
-    <th><a href="https://github.com/resque/resque">Resque</a></th>
-    <th><a href="http://sidekiq.org">Sidekiq</a></th>
+    <th>Rocket Job</th>
+    <th>Rocket Job Pro</th>
+    <th>Delayed Job</th>
+    <th>Resque</th>
+    <th>Sidekiq</th>
   </tr>
   <tr>
-    <td>Reliability</td>
+    <td>High Performance</td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/info.png" alt="?"></td>
+  </tr>
+  <tr>
+    <td>Reliable</td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/info.png" alt="?"></td>
   </tr>
   <tr>
-    <td>Job specific priority based processing</td>
+    <td>Scalable</td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/info.png" alt="?"></td>
+  </tr>
+  <tr>
+    <td>Web Interface</td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/info.png" alt="?"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
   </tr>
   <tr>
     <td>Cron Replacement</td>
@@ -32,11 +51,21 @@ layout: default
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/info.png" alt="?"></td>
     <td align="center"><img src="images/info.png" alt="?"></td>
+    <td align="center"><img src="images/info.png" alt="?"></td>
+  </tr>
+  <tr>
+    <td>Job Priorities</td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
   <tr>
     <td>Job Retention</td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
@@ -46,13 +75,7 @@ layout: default
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
-  </tr>
-  <tr>
-    <td>Web UI</td>
-    <td align="center"><img src="images/yes.png" alt="Y"></td>
-    <td align="center"><img src="images/yes.png" alt="Y"></td>
-    <td align="center"><img src="images/yes.png" alt="Y"></td>
-    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
   <tr>
     <td>Individual Job Status</td>
@@ -60,9 +83,11 @@ layout: default
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/info.png" alt="?"></td>
     <td align="center"><img src="images/info.png" alt="?"></td>
+    <td align="center"><img src="images/info.png" alt="?"></td>
   </tr>
   <tr>
     <td>Future Dated Jobs</td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/info.png" alt="?"></td>
@@ -74,24 +99,21 @@ layout: default
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
   <tr>
-    <td>Batch Jobs</td>
-    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td>Can run without Rails</td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
-    <td align="center"><img src="images/info.png" alt="?"></td>
-  </tr>
-  <tr>
-    <td>Pause & Resume Batch Jobs</td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
-    <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
   <tr>
     <td>Encryption</td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
@@ -101,11 +123,29 @@ layout: default
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+  </tr>
+  <tr>
+    <td>Batch Jobs</td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/info.png" alt="?"></td>
+  </tr>
+  <tr>
+    <td>Pause & Resume Batch Jobs</td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
   <tr>
     <td>Large file support</td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
@@ -115,11 +155,13 @@ layout: default
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
   <tr>
     <td>Read and write GZip files</td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
@@ -129,34 +171,31 @@ layout: default
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
   <tr>
     <td>Rate Limiting</td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/info.png" alt="?"></td>
   </tr>
   <tr>
-    <td>Dedicated Support</td>
+    <td>Commercial Support</td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/info.png" alt="?"></td>
   </tr>
   <tr>
     <td>License</td>
-    <td align="center">GPL</td>
+    <td align="center">Apache</td>
     <td align="center">Commercial</td>
     <td align="center">MIT</td>
+    <td align="center">MIT</td>
     <td align="center">LGPL / Commercial</td>
-  </tr>
-  <tr>
-    <td>Pricing</td>
-    <td align="center">Free</td>
-    <td align="center">$75 / month /</br>100 worker threads</td>
-    <td align="center">Free</td>
-    <td align="center">Free / Commercial</td>
   </tr>
 </table>
 

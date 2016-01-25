@@ -2,14 +2,14 @@
 layout: default
 ---
 
-## Mission Control
+## Rocket Job Mission Control
 
 
-[Mission Control][1] is the web interface for viewing and managing [rocketjob][0] jobs.
+[Rocket Job Mission Control][1] is the web interface for monitoring [Rocket Job][0].
 
 ![Screen shot](images/rjmc.png)
 
-[Mission Control][1] first opens with the list of jobs in the system, listed in reverse chronological order.
+[Rocket Job Mission Control][1] first opens with the list of jobs in the system, listed in reverse chronological order.
 I.e. With the newest job at the top.
 
 Each job entry in the list includes:
@@ -32,12 +32,12 @@ Each job entry in the list includes:
 * Retry failed jobs
 * Abort, or fail queued or running jobs
 * Destroy a completed or aborted job
-* By separating [Mission Control][1] into a separate gem means it does not
-  have to be loaded everywhere [rocketjob][0] jobs are defined or run.
+* By separating [Rocket Job Mission Control][1] into a separate gem means it does not
+  have to be loaded everywhere [Rocket Job][0] jobs are defined or run.
 
 ### Managing Jobs
 
-Select a job in [Mission Control][1] to see more details about the status of that job:
+Select a job in [Rocket Job Mission Control][1] to see more details about the status of that job:
 
 ![Screen shot](images/rjmc_job.png)
 
@@ -48,18 +48,18 @@ Based on the state of the job, the relevant actions will appear:
 * `pause`
     * Pause a `running` or `queued` job to temporarily stop processing on the job.
     * The job will only continue processing once the `resume` button is hit.
-    * Note: `pause` and `resume` is intended for jobs derived from `RocketJob::SlicedJob` since
+    * Note: `pause` and `resume` is intended for jobs that include `RocketJob::Plugins::BatchJob` since
       those jobs can be pre-empted during processing. Otherwise, the job needs to manually perform
       checks to see if the job is paused and halt processing.
 * `resume`
     * Resume a `paused` job so that it can continue processing again.
 * `fail`
     * Fail a `running` or `queued` job so that no more processing will occur.
-    * All input & output collections will be cleaned up for jobs derived from `RocketJob::SlicedJob`.
+    * All input & output collections will be cleaned up for jobs that include `RocketJob::Plugins::BatchJob`.
     * The job can be retried later after it has failed.
 * `abort`
     * Abort a `running` or `queued` job so that no more processing will occur.
-    * All input & output collections will be cleaned up for jobs derived from `RocketJob::SlicedJob`.
+    * All input & output collections will be cleaned up for jobs that include `RocketJob::Plugins::BatchJob`.
     * The job _cannot_ be retried after it has been aborted.
 * `destroy`
     * Destroy the job entirely from the system.
@@ -80,7 +80,7 @@ Each worker can be managed individually, or to pause all current work, click on 
 
 The workers can be resumed later by clicking on `Actions` and selecting `Resume All`.
 
-To shutdown all workers via [Mission Control][1], click on `Actions` and select `Stop All`.
+To shutdown all workers via [Rocket Job Mission Control][1], click on `Actions` and select `Stop All`.
 
 ### [Next: Installation ==>](installation.html)
 
