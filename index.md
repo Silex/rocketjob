@@ -44,8 +44,8 @@ Or, start small with Rocket Job and seamlessly scale up to meet future business 
 Designed to meet Enterprise Batch Processing requirements.
 
 * High Performance.
-    * Process large batches at up to [370,000](rj_pro_performance.html)  records per second using a single server. **
-    * Over 80x faster at batch processing than its nearest competitor. **
+    * Process large batches at up to [370,000](rj_pro_performance.html) records per second using a single server.
+    * Over 80x faster at batch processing than its nearest competitor.
 * Encryption.
     * Needed to meet compliance regulations.
 * Compression.
