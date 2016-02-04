@@ -14,13 +14,13 @@ priorities, and without requiring any manual intervention or tuning of worker qu
 
 Example: Set the default priority for a job class:
 
-```ruby
+~~~ruby
 ImportJob.create!(
   file_name: 'file.csv',
   # Give this job a higher priority so that it will jump the queue
   priority:  5
 )
-```
+~~~
 
 The priority can also be changed on a per job basis at runtime via [Rocket Job Mission Control][1].
 
@@ -28,19 +28,19 @@ The priority can also be changed on a per job basis at runtime via [Rocket Job M
 
 To run the job in the future, set `run_at` to a future time:
 
-```ruby
+~~~ruby
 ImportJob.create!(
   file_name: 'file.csv',
   # Only run this job 2 hours from now
   run_at:    2.hours.from_now
 )
-```
+~~~
 
 ### Job retention
 
 On completion jobs usually disappear. Jobs can be retained and viewed in [Mission Control][1].
 
-```ruby
+~~~ruby
 class CalculateJob < RocketJob::Job
   rocket_job do |job|
     # Retain the job when it completes
@@ -51,7 +51,7 @@ class CalculateJob < RocketJob::Job
     # Perform work here
   end
 end
-```
+~~~
 
 ### Job Result
 
@@ -62,7 +62,7 @@ to an end user.
 The `result` is a Hash that can contain a numeric result, string, array of values, or even a binary image, up to a
 total document size of 16MB.
 
-```ruby
+~~~ruby
 class CalculateJob < RocketJob::Job
   rocket_job do |job|
     # Don't destroy the job when it completes
@@ -78,27 +78,27 @@ class CalculateJob < RocketJob::Job
     { calculation: count * 1000 }
   end
 end
-```
+~~~
 
 Queue the job for processing:
 
-```ruby
+~~~ruby
 job = CalculateJob.create!(count: 24)
-```
+~~~
 
 Continue doing other work while the job runs, and display its result on completion:
 
-```ruby
+~~~ruby
 if job.reload.completed?
   puts "Job result: #{job.result}"
 end
-```
+~~~
 
 ### Job Status
 
 Status can be checked at any time:
 
-```ruby
+~~~ruby
 # Update the job's in memory status
 job.reload
 
@@ -107,7 +107,7 @@ puts "Job is: #{job.state}"
 
 # Complete state information as displayed in mission control
 puts "Full job status: #{job.status.inspect}"
-```
+~~~
 
 ### Expired jobs
 
@@ -118,26 +118,26 @@ The system can queue a job for processing, but if the workers are too busy with
 other higher priority jobs and are not able to process this job by its expiry
 time, then the job will be discarded without processing:
 
-```ruby
+~~~ruby
 ImportJob.create!(
   file_name: 'file.csv',
   # Don't process this job if it is queued for longer than 15 minutes
   expires_at: 15.minutes.from_now
 )
-```
+~~~
 
 ### Exception Handling
 
 The exception and complete backtrace is stored in the job on failure to
 aid in problem determination.
 
-```ruby
+~~~ruby
 if job.reload.failed?
   puts "Job failed with: #{job.exception.klass}: #{job.exception.message}"
   puts "Backtrace:"
   puts job.exception.backtrace.join("\n")
 end
-```
+~~~
 
 ### Callbacks
 
@@ -179,7 +179,7 @@ Event callbacks:
 
 Example: Send an email after a job starts, completes, fails, or aborts.
 
-```ruby
+~~~ruby
 class MyJob < RocketJob::Job
   key :email_recipients, Array
 
@@ -211,7 +211,7 @@ class MyJob < RocketJob::Job
     MyJob.completed(email_recipients, self).deliver
   end
 end
-```
+~~~
 
 Callbacks can be used to insert "middleware" into specific job classes, or for all jobs.
 
@@ -225,7 +225,7 @@ are available since they are exposed by ActiveModel.
 
 Example of `presence` and `inclusion` validations:
 
-```ruby
+~~~ruby
 class Job
   include MongoMapper::Document
   key :priority, Integer
@@ -238,7 +238,7 @@ class SimpleJob < Job
 
   validates_presence_of :login
 end
-```
+~~~
 
 ### Lookups
 
@@ -248,55 +248,55 @@ the job programmatically while it is running.
 
 To find the last job that was submitted:
 
-```ruby
+~~~ruby
 job = RocketJob::Job.last
-```
+~~~
 
 To find a specific job, based on its id:
 
-```ruby
+~~~ruby
 job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
-```
+~~~
 
 To change its priority:
 
-```ruby
+~~~ruby
 job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
 job.priority = 32
 job.save!
-```
+~~~
 
 Or, to skip the extra save step, update any attribute of the job directly:
 
-```ruby
+~~~ruby
 job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
 job.update_attributes(priority: 32)
-```
+~~~
 
 How long has the last job in the queue been running for?
 
-```ruby
+~~~ruby
 job = RocketJob::Job.last
 puts "The job has been running for: #{job.duration}"
-```
+~~~
 
 How many `MyJob` jobs are currently being processed?
 
-```ruby
+~~~ruby
 count = MyJob.where(state: :running).count
-```
+~~~
 
 Retry all failed jobs in the system:
 
-```ruby
+~~~ruby
 RocketJob::Job.where(state: :failed).each do |job|
   job.retry!
 end
-```
+~~~
 
 Is a job still running?
 
-```ruby
+~~~ruby
 job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
 
 if job.completed?
@@ -304,7 +304,7 @@ if job.completed?
 elsif job.running?
   puts "The job is being processed by worker: #{job.worker_name}"
 end
-```
+~~~
 
 `RocketJob::Job` uses the same ActiveModel implementation that is used in ActiveRecord
 and thereby exposes a very familiar API for anyone familiar with Rails.
@@ -319,7 +319,7 @@ Custom behavior can be mixed into a job.
 For example create a mix-in that uses a validation to ensure that only one instance
 of a job is running at a time:
 
-```ruby
+~~~ruby
 # encoding: UTF-8
 require 'active_support/concern'
 
@@ -340,11 +340,11 @@ module RocketJob
     end
   end
 end
-```
+~~~
 
 Now `include` the above mix-in into a job:
 
-```ruby
+~~~ruby
 class MyJob < RocketJob::Job
   # Create a singleton job so that only one instance is ever queued or running at a time
   include RocketJob::Concerns::Singleton
@@ -353,20 +353,20 @@ class MyJob < RocketJob::Job
     # process data
   end
 end
-```
+~~~
 
 Queue the job, supplying the `file_name` that was declared and used in `FileJob`:
 
-```ruby
+~~~ruby
 MyJob.create!(file_name: 'abc.csv')
-```
+~~~
 
 Trying to queue the job a second time will result in:
 
-```ruby
+~~~ruby
 MyJob.create!(file_name: 'abc.csv')
 # => MongoMapper::DocumentNotValid: Validation failed: State Another instance of this job is already queued or running
-```
+~~~
 
 ### High performance logging
 

@@ -44,7 +44,7 @@ Or, start small with Rocket Job and seamlessly scale up to meet future business 
 Designed to meet Enterprise Batch Processing requirements.
 
 * High Performance.
-    * Process large batches at up to [370,000](rj_pro_performance.html) records per second using a single server.
+    * Process large batches at up to [500,000](rj_pro_performance.html) records per second using a single server.
     * Over 80x faster at batch processing than its nearest competitor.
 * Encryption.
     * Needed to meet compliance regulations.
@@ -69,7 +69,7 @@ Designed to meet Enterprise Batch Processing requirements.
 
 ### Example:
 
-```ruby
+~~~ruby
 class ImportJob < RocketJob::Job
   # Create a property called `file_name` of type String
   key :file_name, String
@@ -79,13 +79,13 @@ class ImportJob < RocketJob::Job
     puts "The file_name is #{file_name}"
   end
 end
-```
+~~~
 
 Queue the job for processing:
 
-```ruby
+~~~ruby
 ImportJob.create!(file_name: 'file.csv')
-```
+~~~
 
 Monitor and manage the job via [Rocket Job Mission Control][1].
 

@@ -62,7 +62,7 @@ layout: default
     <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
   <tr>
-    <td>Job Retention</td>
+    <td>Retain Completed Jobs</td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>

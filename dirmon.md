@@ -14,26 +14,26 @@ programmatically, or via [Rocket Job Mission Control][1], the web management int
 
 Example, creating a `DirmonEntry`
 
-```ruby
+~~~ruby
 entry = RocketJob::DirmonEntry.create!(
   pattern:           '/path_to_monitor/*',
   job_class_name:    'MyFileProcessJob',
   archive_directory: '/exports/archive'
 )
-```
+~~~
 
 When a Dirmon entry is created it is initially `disabled` and needs to be enabled before
 DirmonJob will start processing it:
 
-```ruby
+~~~ruby
 entry.enable!
-```
+~~~
 
 Active dirmon entries can also be disabled:
 
-```ruby
+~~~ruby
 entry.disable!
-```
+~~~
 
 The attributes of DirmonEntry:
 
@@ -65,9 +65,9 @@ The attributes of DirmonEntry:
     * Any job properties to set.
         * Example, override the default job priority:
 
-```ruby
+~~~ruby
 { priority: 45 }
-```
+~~~
 
 * `archive_directory`
     * Archive directory to move the file to before the job is started. It is important to
@@ -82,35 +82,35 @@ The attributes of DirmonEntry:
 The directory monitor job only needs to be started once per installation by running
 the following code:
 
-```ruby
+~~~ruby
 RocketJob::Jobs::DirmonJob.create!
-```
+~~~
 
 The polling interval to check for new files can be modified when starting the job
 for the first time by adding:
 
-```ruby
+~~~ruby
 RocketJob::Jobs::DirmonJob.create!(check_seconds: 180)
-```
+~~~
 
 The default priority for `DirmonJob` is 40, to increase it's priority:
 
-```ruby
+~~~ruby
 RocketJob::Jobs::DirmonJob.create!(
   check_seconds: 180,
   priority:      25
 )
-```
+~~~
 
 Once `DirmonJob` has been started it's priority and check interval can be
 changed at any time as follows:
 
-```ruby
+~~~ruby
 RocketJob::Jobs::DirmonJob.first.update_attributes(
   check_seconds: 180,
   priority:      20
 )
-```
+~~~
 
 ### High Availability
 
