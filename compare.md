@@ -46,14 +46,6 @@ layout: default
     <td align="center"><img src="images/yes.png" alt="Y"></td>
   </tr>
   <tr>
-    <td>Cron Replacement</td>
-    <td align="center"><img src="images/yes.png" alt="Y"></td>
-    <td align="center"><img src="images/yes.png" alt="Y"></td>
-    <td align="center"><img src="images/info.png" alt="?"></td>
-    <td align="center"><img src="images/info.png" alt="?"></td>
-    <td align="center"><img src="images/info.png" alt="?"></td>
-  </tr>
-  <tr>
     <td>Job Priorities</td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
@@ -94,7 +86,7 @@ layout: default
     <td align="center"><img src="images/yes.png" alt="Y"></td>
   </tr>
   <tr>
-    <td>Directory Monitor</td>
+    <td>Files trigger jobs</td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
@@ -110,6 +102,22 @@ layout: default
     <td align="center"><img src="images/yes.png" alt="Y"></td>
   </tr>
   <tr>
+    <td>Centralized Logging</td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="Y"></td>
+  </tr>
+  <tr>
+    <td>Built-in Metrics</td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/info.png" alt="?"></td>
+  </tr>
+  <tr>
     <td>Encryption</td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
@@ -120,6 +128,22 @@ layout: default
   <tr>
     <td>Compression</td>
     <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+  </tr>
+  <tr>
+    <td>Cron Replacement</td>
+    <td align="center"><img src="images/no.png" alt="Y"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/info.png" alt="?"></td>
+    <td align="center"><img src="images/info.png" alt="?"></td>
+    <td align="center"><img src="images/info.png" alt="?"></td>
+  </tr>
+  <tr>
+    <td>Processing Window</td>
+    <td align="center"><img src="images/no.png" alt="Y"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
@@ -143,6 +167,14 @@ layout: default
   </tr>
   <tr>
     <td>Large file support</td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+  </tr>
+  <tr>
+    <td>Multiple output files</td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
     <td align="center"><img src="images/no.png" alt="N"></td>
@@ -191,7 +223,7 @@ layout: default
   </tr>
   <tr>
     <td>License</td>
-    <td align="center">Apache</td>
+    <td align="center">Apache v2</td>
     <td align="center">Commercial</td>
     <td align="center">MIT</td>
     <td align="center">MIT</td>
@@ -205,7 +237,7 @@ layout: default
   <tr>
     <th>Yes</th>
     <th>No</th>
-    <th>Requires Add-on</br>or is limited</th>
+    <th>Requires Add-on</br> or is limited</th>
   </tr>
   <tr>
     <td align="center"><img src="images/yes.png" alt="Y"></td>

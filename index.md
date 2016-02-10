@@ -3,12 +3,11 @@ layout: default
 ---
 ## Rocket Job
 
-Rocket Job is a distributed, priority-based, background job, computation system for Ruby.
+Rocket Job, a distributed, priority based, background job, batch processing system for Ruby and Rails.
 Rocket Job makes it easy to reliably process data using jobs written in Ruby.
 
-Outgrown existing Ruby background job processing solutions?
+Outgrown existing Ruby background job processing solutions? Upgrade to Rocket Job.
 
-Upgrade to Rocket Job.
 Or, start small with Rocket Job and seamlessly scale up to meet future business demands.
 
 ### Rocket Job Key Differentiators:
@@ -87,7 +86,7 @@ Queue the job for processing:
 ImportJob.create!(file_name: 'file.csv')
 ~~~
 
-Monitor and manage the job via [Rocket Job Mission Control][1].
+Monitor and manage any job via [Rocket Job Mission Control][1].
 
 ![Screen shot](images/rjmc_job.png)
 
