@@ -76,6 +76,15 @@ Or, if you have generated bundler bin stubs:
 bin/rocketjob
 ~~~
 
+#### Rails 5
+
+If running Rails 5, add the following line to the Gemfile directly after the `rails` entry and before
+`rocketjob`:
+
+~~~ruby
+gem 'activemodel-serializers-xml', require: 'active_model/serializers'
+~~~
+
 ### Installing RocketJob Mission Control (Web Interface)
 
 [Rocket Job Mission Control][1] is the web interface for [Rocket Job][0].
@@ -193,7 +202,7 @@ Enter the following code:
 require 'rocketjob'
 
 # Log to development.log
-SemanticLogger.add_appender('development.log', &SemanticLogger::Appender::Base.colorized_formatter)
+SemanticLogger.add_appender(file_name: 'development.log', formatter: :color)
 SemanticLogger.default_level = :debug
 
 # Configure Mongo

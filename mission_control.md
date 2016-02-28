@@ -5,11 +5,11 @@ layout: default
 ## Rocket Job Mission Control
 
 
-[Rocket Job Mission Control][1] is the web interface for monitoring [Rocket Job][0].
+[Rocket Job Mission Control][1] is the web interface for managing and monitoring [Rocket Job][0].
 
-![Screen shot](images/rjmc.png)
+![Screen shot](images/rjmc_running.png)
 
-[Rocket Job Mission Control][1] first opens with the list of jobs in the system, listed in reverse chronological order.
+[Rocket Job Mission Control][1] first opens with the list of running jobs in the system, listed in reverse chronological order.
 I.e. With the newest job at the top.
 
 Each job entry in the list includes:
@@ -39,7 +39,7 @@ Each job entry in the list includes:
 
 Select a job in [Rocket Job Mission Control][1] to see more details about the status of that job:
 
-![Screen shot](images/rjmc_job.png)
+![Screen shot](images/rjmc_job_running.png)
 
 Based on the state of the job, the relevant actions will appear:
 
@@ -64,21 +64,58 @@ Based on the state of the job, the relevant actions will appear:
 * `destroy`
     * Destroy the job entirely from the system.
 
+For example for a failed job:
+
 ![Screen shot](images/rjmc_job_failed.png)
 
-### Active Workers
+#### Scheduled Jobs
 
-To see the active workers, select `Menu` on the top right of the screen and select `Workers`.
+Scheduled jobs are jobs scheduled to be run in the future and include jobs that repeat such as Cron Jobs.
 
-![Screen shot](images/rjmc_workers.png)
+To run a job immediately instead of waiting until its next scheduled time, select the `Run` button.
+
+![Screen shot](images/rjmc_scheduled.png)
+
+#### Queued Jobs
+
+![Screen shot](images/rjmc_queued.png)
+
+#### Running Jobs
+
+![Screen shot](images/rjmc_running.png)
+
+#### Completed Jobs
+
+![Screen shot](images/rjmc_completed.png)
+
+#### Paused Jobs
+
+![Screen shot](images/rjmc_paused.png)
+
+#### Failed Jobs
+
+![Screen shot](images/rjmc_failed.png)
+
+#### Aborted Jobs
+
+![Screen shot](images/rjmc_aborted.png)
+
+### Job Activity by Worker
+
+To see what each worker is currently busy with select the `Activity` menu option:
+
+![Screen shot](images/rjmc_active.png)
+
 
 ### Managing Workers
 
-Each worker can be managed individually, or to pause all current work, click on `Actions` and select `Pause All`.
+To manage workers, select the `Workers` menu option:
 
-![Screen shot](images/rjmc_workers_pause.png)
+![Screen shot](images/rjmc_workers.png)
 
-The workers can be resumed later by clicking on `Actions` and selecting `Resume All`.
+Each worker can be managed individually, or to pause all current work, select `Pause All`.
+
+The workers can be resumed later by selecting `Resume All`.
 
 To shutdown all workers via [Rocket Job Mission Control][1], click on `Actions` and select `Stop All`.
 

@@ -312,6 +312,51 @@ and thereby exposes a very familiar API for anyone familiar with Rails.
 Since everything about this job is held in this one document, all
 details about the job are accessible programmatically.
 
+### Cron replacement
+
+* [Rocket Job][0] is a great replacement for all those cron jobs.
+* Include the `RocketJob::Plugins::Cron` plugin into any job to turn it into a cron job.
+* Set the attribute `cron_schedule` to any valid cron schedule.
+* `cron_schedule` also supports an optional timezone. If not set it defaults to the local timezone.
+
+Example, run the job every night at midnight UTC:
+
+~~~ruby
+class MyCronJob < RocketJob::Job
+  include RocketJob::Plugins::Cron
+
+  rocket_job do |job|
+    # Every night at midnight UTC
+    job.cron_schedule      = '0 0 * * * UTC'
+  end
+
+  def perform
+    # Will be called every night at midnight UTC
+  end
+end
+~~~
+
+The `cron_schedule` will be validated when the job is saved, and is required for every job that
+includes the `RocketJob::Plugins::Cron` plugin.
+
+Benefits over regular cron:
+
+* Easily run a Cron job immediately, via [Rocket Job Mission Control][1], or
+
+~~~ruby
+MyCronJob.first.update_attributes(run_at: nil)
+~~~
+* Easily change the cron schedule at any time.
+
+~~~ruby
+MyCronJob.first.update_attributes(cron_schedule: '* 1 * * * America/New_York')
+~~~
+* Cron job failures are viewable in [Rocket Job Mission Control][1]
+* No single point of failure.
+    * Linux/Unix cron is defined on a single server. If that server is unavailable for any reason
+      then the cron jobs no longer run.
+    * Rocket Job will run the cron jobs on any available worker.
+
 ### Extensibility
 
 Custom behavior can be mixed into a job.
@@ -453,7 +498,7 @@ ActiveRecord MySQL reads to multiple slave servers.
 
 * [API Reference](http://www.rubydoc.info/gems/rocketjob/)
 
-### [Next: Rocket Job Pro Guide ==>](pro_guide.html)
+### [Next: Batch Processing ==>](batch.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control
