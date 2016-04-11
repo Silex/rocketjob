@@ -116,7 +116,7 @@ Rocket Job makes it easy to reliably process work and complex batch processing i
     <td>
       High Performance.
       <ul>
-        <li>Over [1,000](rj_performance.html) jobs per second on a single server.</li>
+        <li>Over <a href="rj_performance.html">1,000</a> jobs per second on a single server.</li>
       </ul>
     </td>
   </tr>
