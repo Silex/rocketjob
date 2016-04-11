@@ -311,7 +311,7 @@ layout: default
 </table>
 
 
-### [Next: Mission Control ==>](mission_control.html)
+### [Next: Installation ==>](installation.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

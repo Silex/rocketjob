@@ -1,13 +1,13 @@
 ---
 layout: default
 ---
-## Batch / Parallel Processing
+## Batch Processing
 
-* Batch / parallel processing is available as part of Rocket Job Pro.
+* Batch processing is available as part of Rocket Job Pro.
 
 Regular jobs run on a single worker. In order to scale up and use all available workers
 it is necessary to break up the input data into "slices" so that different parts of the job
-can be pocessed in parallel.
+can be processed in parallel.
 
 Jobs that include `RocketJob::Plugins::Batch` break their work up into slices so that many workers can work
 on the individual slices at the same time. Slices take a large and unwieldy batch job and break it up

@@ -1,67 +1,154 @@
 ---
 layout: default
 ---
-## Rocket Job
 
-Rocket Job, a distributed, priority based, background job, batch processing system for Ruby and Rails.
-Rocket Job makes it easy to reliably process data using jobs written in Ruby.
+Rocket Job makes it easy to reliably process work and complex batch processing in the background using jobs written in Ruby.
 
-### Rocket Job Key Differentiators:
+<table border="0" width="100%">
+  <tr>
+    <td align="center" width="60%"><a>Cost: $0</a></td>
+    <td>
+      Free.
+      <ul>
+        <li>Open Source.</li>
+        <li>Community support.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="60%"><img src="images/rjmc_running.png" alt="Running"></td>
+    <td>
+      Monitoring.
+      <ul>
+        <li>Web Interface - Rocket Job Mission Control.</li>
+        <li>Monitor and manage every job in the system.</li>
+        <li>View current status.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="images/rjmc_queued.png" alt="Running"></td>
+    <td>
+      Priority based processing.
+      <ul>
+        <li>Process jobs in business priority order.</li>
+        <li>Dynamically change job priority to push through business critical jobs.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="images/rjmc_scheduled.png" alt="Running"></td>
+    <td>
+      Cron replacement.
+    </td>
+  </tr>
+  <tr>
+    <td>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Job</span> <span class="o">&lt;</span> <span class="no">RocketJob</span><span class="o">::</span><span class="no">Job</span>
+  <span class="n">key</span> <span class="ss">:login</span><span class="p">,</span> <span class="no">String</span>
+  <span class="n">key</span> <span class="ss">:count</span><span class="p">,</span> <span class="no">Integer</span>
 
-* Monitoring.
-    * Web Interface - Rocket Job Mission Control.
-    * Monitor and manage every job in the system.
-    * View current status.
-* Priority based processing.
-    * Process jobs in business priority order.
-    * Dynamically change job priority to push through business critical jobs.
-* Cron replacement.
-* Validations.
-    * Validate job parameters when the job is created.
-* Callbacks / Middleware.
-    * Extensive callback hooks to customize job processing and behavior.
-* Ease of use.
-    * Similar interface to ActiveRecord models.
-* Trigger Jobs when new files arrive.
-    * [Rocket Job Directory Monitor][4] monitors directories for new files and then
-      kicks off a job to process that file.
-* High Performance.
-    * Over [1,000](rj_performance.html) jobs per second on a single server.
-* Reliable.
-    * Reliably process and track every job.
-* Scalable.
-    * Scales from a single worker to thousands of workers across hundreds of servers.
-* Works with or without Rails.
-* Free
-    * Open Source.
-    * Community support.
+  <span class="n">validates_presence_of</span> <span class="ss">:login</span>
+  <span class="n">validates</span> <span class="ss">:count</span><span class="p">,</span> <span class="ss">inclusion: </span><span class="mi">1</span><span class="p">.</span><span class="nf">.</span><span class="mi">100</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+    </td>
+    <td>
+      Validations.
+      <ul>
+        <li>Validate job parameters when the job is created.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyJob</span> <span class="o">&lt;</span> <span class="no">RocketJob</span><span class="o">::</span><span class="no">Job</span>
+  <span class="n">after_start</span> <span class="ss">:email_started</span>
 
-### Rocket Job Pro Key Differentiators:
+  <span class="k">def</span> <span class="nf">perform</span>
+  <span class="k">end</span>
 
-Designed to meet Enterprise Batch Processing requirements.
-
-* High Performance.
-    * Process large batches at up to [500,000](rj_pro_performance.html) records per second using a single server.
-    * Over 80x faster at batch processing than its nearest competitor.
-* Encryption.
-    * Meet compliance regulations.
-* Compression.
-    * Reduced storage and network requirements.
-* Proven.
-    * Rocket Job Pro is used daily in production environments processing large files with millions of
-      records, as well as large jobs that walk through very large databases.
-* Batch Jobs.
-    * Parallel processing of large data sets.
-    * Pause / Resume running jobs.
-    * Change the priority of jobs while they are running to push a job through earlier, when needed.
-* Batch framework also supports:
-    * Analytics
-    * ETL
-    * Map Reduce
-    * etc.
-* Large file streaming support.
-    * CSV, XlSX, Zip, GZip, etc.
-* Commercial Support.
+  <span class="c1"># Send an email when the job starts</span>
+  <span class="k">def</span> <span class="nf">email_started</span>
+    <span class="no">MyJob</span><span class="p">.</span><span class="nf">started</span><span class="p">(</span><span class="nb">self</span><span class="p">).</span><span class="nf">deliver</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+    </td>
+    <td>
+      Callbacks.
+      <ul>
+        <li>Extensive callback hooks to customize job processing and behavior.</li>
+        <li>Similar to Middleware.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="no">ImportJob</span><span class="p">.</span><span class="nf">create!</span><span class="p">(</span>
+  <span class="ss">file_name: </span><span class="s1">'file.csv'</span><span class="p">,</span>
+  <span class="ss">priority:  </span><span class="mi">5</span>
+<span class="p">)</span>
+</code></pre>
+</div>
+    </td>
+    <td>
+      Familiar interface.
+      <ul>
+        <li>Similar interface to ActiveRecord models.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="images/fa-folder-open-128.png" alt="Folder"></td>
+    <td>
+      Trigger Jobs when new files arrive.
+      <ul>
+        <li>Dirmon monitors directories for new files.</li>
+        <li>Kicks off a Rocket Job to process the file.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="images/fa-alarm-clock.png" alt="Folder"></td>
+    <td>
+      High Performance.
+      <ul>
+        <li>Over [1,000](rj_performance.html) jobs per second on a single server.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="images/fa-chain.png" alt="Folder"></td>
+    <td>
+      Reliable.
+      <ul>
+        <li>Reliably process and track every job.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="images/fa-server.png" alt="Folder"> <img src="images/fa-server.png" alt="Folder"> <img src="images/fa-server.png" alt="Folder"></td>
+    <td>
+      Scalable.
+      <ul>
+        <li>Scales from a single worker to thousands of workers across hundreds of servers.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="images/ruby.png" alt="Ruby"><img src="images/rails-logo.svg" height="128" alt="Rails"></td>
+    <td>
+      Ruby and Rails.
+      <ul>
+        <li>Fully supports and integrates with Rails.</li>
+        <li>Can run standalone on Ruby.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 ### Example:
 
@@ -83,11 +170,7 @@ Queue the job for processing:
 ImportJob.create!(file_name: 'file.csv')
 ~~~
 
-Monitor and manage any job via [Rocket Job Mission Control][1].
-
-![Screen shot](images/rjmc_running.png)
-
-### [Next: Compare ==>](compare.html)
+### [Next: Web UI ==>](mission_control.html)
 
 [0]: http://rocketjob.io
 [1]: mission_control.html

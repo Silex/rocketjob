@@ -226,17 +226,12 @@ are available since they are exposed by ActiveModel.
 Example of `presence` and `inclusion` validations:
 
 ~~~ruby
-class Job
-  include MongoMapper::Document
-  key :priority, Integer
-
-  validates :priority, inclusion: 1..100
-end
-
-class SimpleJob < Job
+class Job < RocketJob::Job
   key :login, String
+  key :count, Integer
 
   validates_presence_of :login
+  validates :count, inclusion: 1..100
 end
 ~~~
 
@@ -498,7 +493,7 @@ ActiveRecord MySQL reads to multiple slave servers.
 
 * [API Reference](http://www.rubydoc.info/gems/rocketjob/)
 
-### [Next: Batch Processing ==>](batch.html)
+### [Next: Rocket Job Pro ==>](pro.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

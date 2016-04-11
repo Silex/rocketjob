@@ -2,8 +2,7 @@
 layout: default
 ---
 
-## Rocket Job Mission Control
-
+## Rocket Job Web UI
 
 [Rocket Job Mission Control][1] is the web interface for managing and monitoring [Rocket Job][0].
 
@@ -119,7 +118,7 @@ The workers can be resumed later by selecting `Resume All`.
 
 To shutdown all workers via [Rocket Job Mission Control][1], click on `Actions` and select `Stop All`.
 
-### [Next: Installation ==>](installation.html)
+### [Next: Compare ==>](compare.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control
