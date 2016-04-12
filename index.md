@@ -2,8 +2,6 @@
 layout: default
 ---
 
-Rocket Job makes it easy to reliably process work and complex batch processing in the background using jobs written in Ruby.
-
 <table border="0" width="100%">
   <tr>
     <td align="center" width="60%"><a>Cost: $0</a></td>
@@ -139,13 +137,15 @@ Rocket Job makes it easy to reliably process work and complex batch processing i
     </td>
   </tr>
   <tr>
-    <td align="center"><img src="images/ruby.png" alt="Ruby"><img src="images/rails-logo.svg" height="128" alt="Rails"></td>
+    <td align="center"><img src="images/rails-logo.svg" height="128" alt="Rails"></td>
     <td>
-      Ruby and Rails.
-      <ul>
-        <li>Fully supports and integrates with Rails.</li>
-        <li>Can run standalone on Ruby.</li>
-      </ul>
+      Fully supports and integrates with Rails.
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="images/ruby.png" alt="Ruby"></td>
+    <td>
+      Can run standalone on Ruby.
     </td>
   </tr>
 </table>
