@@ -221,7 +221,7 @@ HELLO WORLD
 2015-09-09 22:54:41.979662 I [25215:rocketjob 1] [Job 55f0f0f1a26ec06280000001] (0.1ms) HelloWorldJob -- Completed HelloWorldJob#perform
 ~~~
 
-### Installing RocketJob Mission Control (Web Interface)
+### Standalone Rocket Job Web Interface
 
 [Rocket Job Mission Control][1] is the web interface for [Rocket Job][0].
 In order to install [Rocket Job Mission Control][1] in a stand-alone environment, we need to
@@ -242,14 +242,19 @@ gem 'rocketjob'
 gem 'bson_ext', platform: :ruby
 gem 'rails_semantic_logger'
 gem 'rocketjob_mission_control'
+gem 'puma'
 ~~~
 
-Now run `bundle` to install [Rocket Job Mission Control][1]
+Install gems:
+
+~~~
+bundle install
+~~~
 
 Add the following line to `config/routes.rb`:
 
 ~~~ruby
-mount RocketJobMissionControl::Engine => 'rocketjob'
+mount RocketJobMissionControl::Engine => '/'
 ~~~
 
 Re-load spring:
@@ -258,13 +263,27 @@ Re-load spring:
 bin/spring stop
 ~~~
 
+Generate Mongo Configuration file:
+
+~~~
+bundle exec rails generate mongo_mapper:config
+~~~
+
+If you want to configure your application with a MongoDB URI (i.e. on Heroku), then you can use
+the following settings for your production environment in `config/mongo.yml`:
+
+~~~yaml
+production:
+ uri: <%= ENV['MONGODB_URI'] %>
+~~~
+
 Start the stand-alone [Rocket Job Mission Control][1]:
 
 ~~~
 bin/rails s
 ~~~
 
-Open a browser and navigate to the local [Rocket Job Mission Control](http://localhost:3000/rocketjob)
+Open a browser and navigate to the local [Rocket Job Mission Control](http://localhost:3000)
 
 ### [Next: Guide ==>](guide.html)
 
