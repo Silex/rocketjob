@@ -200,13 +200,14 @@ Enter the following code:
 
 ~~~ruby
 require 'rocketjob'
+require 'yaml'
 
 # Log to development.log
 SemanticLogger.add_appender(file_name: 'development.log', formatter: :color)
 SemanticLogger.default_level = :debug
 
 # Configure Mongo
-RocketJob::CLI.load_config('development', 'config/mongo.yml')
+RocketJob::Config.load!('development', 'config/mongo.yml')
 
 require_relative 'jobs/hello_world_job'
 
@@ -216,9 +217,9 @@ HelloWorldJob.create!
 The console running `rocketjob` should show something similar to:
 
 ~~~
-2015-09-09 22:54:41.979435 I [25215:rocketjob 1] [Job 55f0f0f1a26ec06280000001] HelloWorldJob -- Start HelloWorldJob#perform
+2016-05-09 21:29:24.349058 I [64431:rocketjob 008] [job:57313973a26ec03710000001] HelloWorldJob -- Start #perform
 HELLO WORLD
-2015-09-09 22:54:41.979662 I [25215:rocketjob 1] [Job 55f0f0f1a26ec06280000001] (0.1ms) HelloWorldJob -- Completed HelloWorldJob#perform
+2016-05-09 21:29:24.349365 I [64431:rocketjob 008] [job:57313973a26ec03710000001] (0.120ms) HelloWorldJob -- Completed #perform
 ~~~
 
 ### Standalone Rocket Job Web Interface
