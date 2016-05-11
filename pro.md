@@ -38,6 +38,6 @@ To purchase Rocket Job Pro contact sales at:
 
 [0]: http://rocketjob.io
 [1]: mission_control.html
-[2]: http://reidmorrison.github.io/semantic_logger
+[2]: http://rocketjob.github.io/semantic_logger
 [3]: http://mongodb.org
 [4]: dirmon.html

@@ -290,5 +290,5 @@ Open a browser and navigate to the local [Rocket Job Mission Control](http://loc
 
 [0]: http://rocketjob.io
 [1]: mission_control.html
-[2]: http://reidmorrison.github.io/semantic_logger
+[2]: http://rocketjob.github.io/semantic_logger
 [3]: http://mongodb.org

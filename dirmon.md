@@ -135,5 +135,5 @@ should be destroyed when no longer needed.
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control
-[2]: http://reidmorrison.github.io/semantic_logger
+[2]: http://rocketjob.github.io/semantic_logger
 [3]: https://github.com/rocketjob/rocketjob
