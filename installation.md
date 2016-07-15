@@ -37,6 +37,12 @@ gem 'bson_ext', platform: :ruby
 gem 'rails_semantic_logger'
 ~~~
 
+When running Rails 5 or higher, also add the following line to Gemfile:
+
+~~~ruby
+gem 'activemodel-serializers-xml'
+~~~
+
 Install gems:
 
 ~~~
@@ -136,6 +142,7 @@ source 'https://rubygems.org'
 
 gem 'rocketjob'
 gem 'bson_ext', platform: :ruby
+gem 'activemodel-serializers-xml'
 ~~~
 
 Install the gem files:

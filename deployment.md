@@ -21,9 +21,9 @@ new master and continue processing.
 
 Update the file config/mongo.yml with the hostname for the production MongoDB Server / Replica set.
 
-### Worker Processes
+### Servers
 
-Each server can run multiple Rocket Job processes, with 10 threads each. For example:
+Each machine can run multiple Rocket Job servers, with 10 threads each. For example:
 
 ~~~
 nohup bundle exec rocketjob --quiet >> log/rocketjob.log 2>&1
