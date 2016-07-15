@@ -82,15 +82,6 @@ Or, if you have generated bundler bin stubs:
 bin/rocketjob
 ~~~
 
-#### Rails 5
-
-If running Rails 5, add the following line to the Gemfile directly after the `rails` entry and before
-`rocketjob`:
-
-~~~ruby
-gem 'activemodel-serializers-xml', require: 'active_model/serializers'
-~~~
-
 ### Installing RocketJob Mission Control (Web Interface)
 
 [Rocket Job Mission Control][1] is the web interface for [Rocket Job][0].
@@ -100,6 +91,12 @@ Add the [Rocket Job Mission Control][1] gem to your Gemfile
 
 ~~~ruby
 gem 'rocketjob_mission_control'
+~~~
+
+When running Rails 5 or higher, also add the following line to Gemfile:
+
+~~~ruby
+gem 'activemodel-serializers-xml'
 ~~~
 
 Install gems:
@@ -251,6 +248,7 @@ gem 'bson_ext', platform: :ruby
 gem 'rails_semantic_logger'
 gem 'rocketjob_mission_control'
 gem 'puma'
+gem 'activemodel-serializers-xml'
 ~~~
 
 Install gems:
