@@ -493,7 +493,7 @@ ActiveRecord MySQL reads to multiple slave servers.
 
 * [API Reference](http://www.rubydoc.info/gems/rocketjob/)
 
-### [Next: Rocket Job Pro ==>](pro.html)
+### [Next: Batch Processing ==>](batch.html)
 
 [0]: http://rocketjob.io
 [1]: https://github.com/rocketjob/rocketjob_mission_control

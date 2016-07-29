@@ -57,4 +57,4 @@ Run the following from an application console:
 RocketJob::Jobs::DirmonJob.create!
 ~~~
 
-### [Next: View Source Code on Github ==>](https://github.com/rocketjob/rocketjob)
+### [Next: Rocket Job Pro ==>](pro.html)
