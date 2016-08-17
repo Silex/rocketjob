@@ -254,6 +254,14 @@ layout: default
     <td align="center"><img src="images/no.png" alt="N"></td>
   </tr>
   <tr>
+    <td>CSV File Support</td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/yes.png" alt="Y"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+    <td align="center"><img src="images/no.png" alt="N"></td>
+  </tr>
+  <tr>
     <td>Zip File Support</td>
     <td align="center"><img src="images/no.png" alt="N"></td>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
@@ -301,7 +309,7 @@ layout: default
   <tr>
     <th>Yes</th>
     <th>No</th>
-    <th>Requires Add-on</br> or is limited</th>
+    <th>Requires Add-on or is limited</th>
   </tr>
   <tr>
     <td align="center"><img src="images/yes.png" alt="Y"></td>
