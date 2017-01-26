@@ -155,7 +155,7 @@ layout: default
 ~~~ruby
 class ImportJob < RocketJob::Job
   # Create a property called `file_name` of type String
-  key :file_name, String
+  field :file_name, type: String
 
   def perform
     # Perform work here, such as processing a large file

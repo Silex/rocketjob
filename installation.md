@@ -33,7 +33,6 @@ For an existing Rails installation, add the following lines to the bottom of the
 
 ~~~ruby
 gem 'rocketjob'
-gem 'bson_ext', platform: :ruby
 gem 'rails_semantic_logger'
 ~~~
 
@@ -52,11 +51,11 @@ bundle install
 Generate Mongo Configuration file:
 
 ~~~
-bundle exec rails generate mongo_mapper:config
+bundle exec rails generate mongoid:config
 ~~~
 
 If you want to configure your application with a MongoDB URI (i.e. on Heroku), then you can use
-the following settings for your production environment in `config/mongo.yml`:
+the following settings for your production environment in `config/mongoid.yml`:
 
 ~~~yaml
 production:
@@ -148,33 +147,96 @@ Install the gem files:
 bundle
 ~~~
 
-Create a file called `mongo.yml` in the `config` sub-directory with the following contents:
+Create a file called `mongoid.yml` in the `config` sub-directory with the following contents:
 
 ~~~yaml
-defaults: &defaults
-  host: 127.0.0.1
-  port: 27017
-  options:
-    w: 1
-    pool_size: 1
-    slave_ok: false
-    ssl: false
+# See: https://docs.mongodb.com/ruby-driver/master/tutorials/5.1.0/mongoid-installation/
+client_options: &client_options
+  read:
+    mode:             :primary
+  write:
+    w:                0
+  max_pool_size:      50
+  min_pool_size:      10
+  connect_timeout:    5
+  socket_timeout:     300
+  wait_queue_timeout: 5
+
+mongoid_options: &mongoid_options
+  # Includes the root model name in json serialization. (default: false)
+  # include_root_in_json: false
+
+  # Include the _type field in serialization. (default: false)
+  # include_type_for_serialization: false
+
+  # Preload all models in development, needed when models use
+  # inheritance. (default: false)
+  preload_models: true
+
+  # Raise an error when performing a #find and the document is not found.
+  # (default: true)
+  # raise_not_found_error: true
+
+  # Raise an error when defining a scope with the same name as an
+  # existing method. (default: false)
+  scope_overwrite_exception: true
+
+  # Use Active Support's time zone in conversions. (default: true)
+  # use_activesupport_time_zone: true
+
+  # Ensure all times are UTC in the app side. (default: false)
+  use_utc: true
 
 development:
-  <<: *defaults
-  database: myapp_development
+  clients:
+    default: &default_development
+      uri: mongodb://localhost:27017/rocketjob_development
+      options:
+        <<: *client_options
+        write:
+          w:   0
+        max_pool_size: 5
+        min_pool_size: 1
+    rocketjob:
+      <<: *default_development
+    rocketjob_slices:
+      <<: *default_development
+  options:
+    <<: *mongoid_options
 
 test:
-  <<: *defaults
-  database: myapp_test
-  w: 0
+  clients:
+    default: &default_test
+      uri: mongodb://localhost:27017/rocketjob_test
+      options:
+        <<: *client_options
+        write:
+          w:           1
+        max_pool_size: 5
+        min_pool_size: 1
+    rocketjob:
+      <<: *default_test
+    rocketjob_slices:
+      <<: *default_test
+  options:
+    <<: *mongoid_options
 
-# set these environment variables on your prod server
 production:
-  <<: *defaults
-  database: myapp
-  username: <%= ENV['MONGO_USERNAME'] %>
-  password: <%= ENV['MONGO_PASSWORD'] %>
+  clients:
+    default: &default_production
+      uri: mongodb://user:secret@server.example.org:27017,server2.example.org:27017/rocketjob_production
+      options:
+        <<: *client_options
+        write:
+          w:   0
+    rocketjob:
+      <<: *default_production
+    rocketjob_slices:
+      <<: *default_production
+      # Optionally Specify a different database or even server to store slices on
+      # uri: mongodb://user:secret@server3.example.org:27017/slices_production
+  options:
+    <<: *mongoid_options
 ~~~
 
 Create a new Job for the workers to process. Create a file called `hello_world_job.rb`

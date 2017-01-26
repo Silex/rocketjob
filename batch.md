@@ -27,16 +27,14 @@ priority job arrives, and then to resume processing once the higher priority job
 class ReverseJob < RocketJob::Job
   include RocketJob::Plugins::Batch
 
-  rocket_job do |job|
-    # Number of lines/records for each slice
-    job.slice_size          = 100
+  # Number of lines/records for each slice
+  self.slice_size          = 100
 
-    # Keep the job around after it has finished
-    job.destroy_on_complete = false
+  # Keep the job around after it has finished
+  self.destroy_on_complete = false
 
-    # Collect any output from the job
-    job.collect_output      = true
-  end
+  # Collect any output from the job
+  self.collect_output      = true
 
   def perform(line)
     # Work on a single record at a time across many workers
@@ -128,10 +126,8 @@ Encryption helps ensure sensitive data meets compliance requirements both at res
 class ReverseJob < RocketJob::Job
   include RocketJob::Plugins::Batch
 
-  rocket_job do |job|
-    # Encrypt input and output data
-    job.encrypt = true
-  end
+  # Encrypt input and output data
+  self.encrypt = true
 
   def perform(line)
     line.reverse
@@ -148,10 +144,8 @@ Highly recommended when processing large files, or large amounts of data.
 class ReverseJob < RocketJob::Job
   include RocketJob::Plugins::Batch
 
-  rocket_job do |job|
-    # Compress input and output data
-    job.compress = true
-  end
+  # Compress input and output data
+  self.compress = true
 
   def perform(line)
     line.reverse
@@ -178,10 +172,8 @@ either increase or decrease the number of workers working on that job.
 class ReverseJob < RocketJob::Job
   include RocketJob::Plugins::Batch
 
-  rocket_job do |job|
-    # No more than 10 workers should work on this job at a time
-    job.max_active_workers = 10
-  end
+  # No more than 10 workers should work on this job at a time
+  self.max_active_workers = 10
 
   def perform(line)
     line.reverse
@@ -207,12 +199,10 @@ outputting for example the lines that were too short.
 class MultiFileJob < RocketJob::Job
   include RocketJob::Plugins::Batch
 
-  rocket_job do |job|
-    job.collect_output      = true
-    job.destroy_on_complete = false
-    # Register additional `:invalid` output category for this job
-    job.output_categories   = [ :main, :invalid ]
-  end
+  self.collect_output      = true
+  self.destroy_on_complete = false
+  # Register additional `:invalid` output category for this job
+  self.output_categories   = [ :main, :invalid ]
 
   def perform(line)
     if line.length < 10

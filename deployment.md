@@ -19,7 +19,7 @@ server will take over. This transition should occur automatically and without an
 failed jobs. Rocket Job will detect the change in master and automatically connect to the
 new master and continue processing.
 
-Update the file config/mongo.yml with the hostname for the production MongoDB Server / Replica set.
+Update the file config/mongoid.yml with the hostname for the production MongoDB Server / Replica set.
 
 ### Servers
 

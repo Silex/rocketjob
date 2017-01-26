@@ -42,10 +42,8 @@ On completion jobs usually disappear. Jobs can be retained and viewed in [Missio
 
 ~~~ruby
 class CalculateJob < RocketJob::Job
-  rocket_job do |job|
-    # Retain the job when it completes
-    job.destroy_on_complete = false
-  end
+  # Retain the job when it completes
+  self.destroy_on_complete = false
 
   def perform
     # Perform work here
@@ -64,14 +62,12 @@ total document size of 16MB.
 
 ~~~ruby
 class CalculateJob < RocketJob::Job
-  rocket_job do |job|
-    # Don't destroy the job when it completes
-    job.destroy_on_complete = false
-    # Collect the output from the perform method
-    job.collect_output      = true
-  end
+  # Don't destroy the job when it completes
+  self.destroy_on_complete = false
+  # Collect the output from the perform method
+  self.collect_output      = true
 
-  key :count, Integer
+  field :count, type: Integer
 
   def perform
     # The output from this method is stored in the job itself
@@ -181,7 +177,7 @@ Example: Send an email after a job starts, completes, fails, or aborts.
 
 ~~~ruby
 class MyJob < RocketJob::Job
-  key :email_recipients, Array
+  field :email_recipients, type: Array
 
   after_start :email_started
   after_fail :email_failed
@@ -227,8 +223,8 @@ Example of `presence` and `inclusion` validations:
 
 ~~~ruby
 class Job < RocketJob::Job
-  key :login, String
-  key :count, Integer
+  field :login, type: String
+  field :count, type: Integer
 
   validates_presence_of :login
   validates :count, inclusion: 1..100
@@ -297,7 +293,7 @@ job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
 if job.completed?
   puts "Finished!"
 elsif job.running?
-  puts "The job is being processed by worker: #{job.worker_name}"
+  puts "The job is being processed by worker: #{job.server_name}"
 end
 ~~~
 
@@ -320,10 +316,8 @@ Example, run the job every night at midnight UTC:
 class MyCronJob < RocketJob::Job
   include RocketJob::Plugins::Cron
 
-  rocket_job do |job|
-    # Every night at midnight UTC
-    job.cron_schedule      = '0 0 * * * UTC'
-  end
+  # Every night at midnight UTC
+  self.cron_schedule      = '0 0 * * * UTC'
 
   def perform
     # Will be called every night at midnight UTC
