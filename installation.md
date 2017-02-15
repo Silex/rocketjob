@@ -8,7 +8,7 @@ layout: default
 
 ### Compatibility
 
-* Ruby 1.9.3, 2.0, 2.1, 2.2, 2.3, or greater
+* Ruby 2.1, 2.2, 2.3, 2.4.1 or greater
 * JRuby 1.7, 9.0.4.0, or greater
 * [MongoDB][3] V2.6 or greater is required.
 
@@ -32,14 +32,8 @@ For other platforms, see [MongoDB Downloads](https://www.mongodb.org/downloads)
 For an existing Rails installation, add the following lines to the bottom of the file `Gemfile`:
 
 ~~~ruby
-gem 'rocketjob'
 gem 'rails_semantic_logger'
-~~~
-
-When running Rails 5 or higher, also add the following line to Gemfile:
-
-~~~ruby
-gem 'activemodel-serializers-xml'
+gem 'rocketjob', '~> 3.0'
 ~~~
 
 Install gems:
@@ -48,19 +42,37 @@ Install gems:
 bundle install
 ~~~
 
-Generate Mongo Configuration file:
+Generate Mongo Configuration file if one does not already exist:
 
 ~~~
 bundle exec rails generate mongoid:config
 ~~~
 
-If you want to configure your application with a MongoDB URI (i.e. on Heroku), then you can use
-the following settings for your production environment in `config/mongoid.yml`:
+Edit the file config/mongoid.yml with the MongoDB server addresses.
+
+Add the `rocketjob` and `rocketjob_slices` clients as per the example below to every environment.
 
 ~~~yaml
-production:
- uri: <%= ENV['MONGODB_URI'] %>
+development:
+  clients:
+    default: &default_development
+      uri: mongodb://localhost:27017/rocketjob_development
+      options:
+        <<: *client_options
+        write:
+          w:   0
+        max_pool_size: 5
+        min_pool_size: 1
+    rocketjob:
+      <<: *default_development
+    rocketjob_slices:
+      <<: *default_development
+  options:
+    <<: *mongoid_options
 ~~~
+
+The `rocketjob` and `rocketjob_slices` clients above can be changed to point to separate
+database in production to spread load or to improve performance.
 
 If you are running `Spring`, which is installed by default by Rails, stop the backgound
 spring processes to get them to reload:
@@ -89,13 +101,7 @@ It is a rails engine that can be added to any existing Rails 4 or Rails 5 rails 
 Add the [Rocket Job Mission Control][1] gem to your Gemfile
 
 ~~~ruby
-gem 'rocketjob_mission_control'
-~~~
-
-When running Rails 5 or higher, also add the following line to Gemfile:
-
-~~~ruby
-gem 'activemodel-serializers-xml'
+gem 'rocketjob_mission_control', '~> 3.0'
 ~~~
 
 Install gems:
@@ -136,9 +142,7 @@ Create a file called `Gemfile` in the `standalone` directory with the following 
 ~~~ruby
 source 'https://rubygems.org'
 
-gem 'rocketjob'
-gem 'bson_ext', platform: :ruby
-gem 'activemodel-serializers-xml'
+gem 'rocketjob', '~> 3.0'
 ~~~
 
 Install the gem files:
@@ -305,12 +309,10 @@ cd rjmc
 Add the following lines to the bottom of the file `Gemfile`:
 
 ~~~ruby
-gem 'rocketjob'
-gem 'bson_ext', platform: :ruby
 gem 'rails_semantic_logger'
-gem 'rocketjob_mission_control'
+gem 'rocketjob', '~> 3.0'
+gem 'rocketjob_mission_control', '~> 3.0'
 gem 'puma'
-gem 'activemodel-serializers-xml'
 ~~~
 
 Install gems:
@@ -337,13 +339,31 @@ Generate Mongo Configuration file:
 bundle exec rails generate mongo_mapper:config
 ~~~
 
-If you want to configure your application with a MongoDB URI (i.e. on Heroku), then you can use
-the following settings for your production environment in `config/mongo.yml`:
+Edit the file config/mongoid.yml with the MongoDB server addresses.
+
+Add the `rocketjob` and `rocketjob_slices` clients as per the example below to every environment.
 
 ~~~yaml
-production:
- uri: <%= ENV['MONGODB_URI'] %>
+development:
+  clients:
+    default: &default_development
+      uri: mongodb://localhost:27017/rocketjob_development
+      options:
+        <<: *client_options
+        write:
+          w:   0
+        max_pool_size: 5
+        min_pool_size: 1
+    rocketjob:
+      <<: *default_development
+    rocketjob_slices:
+      <<: *default_development
+  options:
+    <<: *mongoid_options
 ~~~
+
+The `rocketjob` and `rocketjob_slices` clients above can be changed to point to separate
+database in production to spread load or to improve performance.
 
 Start the stand-alone [Rocket Job Mission Control][1]:
 

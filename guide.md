@@ -51,6 +51,28 @@ class CalculateJob < RocketJob::Job
 end
 ~~~
 
+### Job Attributes
+
+Jobs already have several standard attributes, such as `description` and `priority`.
+ 
+User defined attributes can be added by using the `field` keyword:
+
+~~~ruby
+class CalculateJob < RocketJob::Job
+  # Retain the job when it completes
+  self.destroy_on_complete = false
+  
+  field :username, type: String
+
+  def perform
+    logger.info "Username is #{username}"
+    # Perform work here
+  end
+end
+~~~
+
+For more details on fields, their types, and defaults, see the [Mongoid Documentation](https://docs.mongodb.com/ruby-driver/master/tutorials/5.1.0/mongoid-documents/#fields).
+
 ### Job Result
 
 When a job runs its result is usually the effect it has on the database, emails sent, etc. Sometimes
@@ -121,6 +143,77 @@ ImportJob.create!(
   expires_at: 15.minutes.from_now
 )
 ~~~
+
+### Queries
+
+Aside from being able to see and change jobs through the [Rocket Job Mission Control][1]
+web interface it is often useful, and even highly desirable to be able to access
+the job programmatically while it is running.
+
+To find the last job that was submitted:
+
+~~~ruby
+job = RocketJob::Job.last
+~~~
+
+To find a specific job, based on its id:
+
+~~~ruby
+job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
+~~~
+
+To change its priority:
+
+~~~ruby
+job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
+job.priority = 32
+job.save!
+~~~
+
+Or, to skip the extra save step, update any attribute of the job directly:
+
+~~~ruby
+job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
+job.update_attributes(priority: 32)
+~~~
+
+How long has the last job in the queue been running for?
+
+~~~ruby
+job = RocketJob::Job.last
+puts "The job has been running for: #{job.duration}"
+~~~
+
+How many `MyJob` jobs are currently being processed?
+
+~~~ruby
+count = MyJob.where(state: :running).count
+~~~
+
+Retry all failed jobs in the system:
+
+~~~ruby
+RocketJob::Job.where(state: :failed).each do |job|
+  job.retry!
+end
+~~~
+
+Is a job still running?
+
+~~~ruby
+job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
+
+if job.completed?
+  puts "Finished!"
+elsif job.running?
+  puts "The job is being processed by worker: #{job.server_name}"
+end
+~~~
+
+For more details on querying jobs, see the [Mongoid Queries Documentation](https://docs.mongodb.com/ruby-driver/master/tutorials/5.1.0/mongoid-queries/) 
+
+Since everything about this job is held in this one document, all
+details about the job are accessible programmatically.
 
 ### Exception Handling
 
@@ -214,6 +307,8 @@ Callbacks can be used to insert "middleware" into specific job classes, or for a
 The `after_fail` callback can be used to automatically retry failed jobs. For example, retry the job again
 in 10 minutes, or retry immediately for up to 3 times, etc...
 
+For more details on callbacks, see the [Mongoid Callbacks Documentation](https://docs.mongodb.com/ruby-driver/master/tutorials/5.1.0/mongoid-callbacks/).
+
 ### Validations
 
 The usual [Rails validations](http://guides.rubyonrails.org/active_record_validations.html)
@@ -231,77 +326,8 @@ class Job < RocketJob::Job
 end
 ~~~
 
-### Lookups
-
-Aside from being able to see and change jobs through the [Rocket Job Mission Control][1]
-web interface it is often useful, and even highly desirable to be able to access
-the job programmatically while it is running.
-
-To find the last job that was submitted:
-
-~~~ruby
-job = RocketJob::Job.last
-~~~
-
-To find a specific job, based on its id:
-
-~~~ruby
-job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
-~~~
-
-To change its priority:
-
-~~~ruby
-job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
-job.priority = 32
-job.save!
-~~~
-
-Or, to skip the extra save step, update any attribute of the job directly:
-
-~~~ruby
-job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
-job.update_attributes(priority: 32)
-~~~
-
-How long has the last job in the queue been running for?
-
-~~~ruby
-job = RocketJob::Job.last
-puts "The job has been running for: #{job.duration}"
-~~~
-
-How many `MyJob` jobs are currently being processed?
-
-~~~ruby
-count = MyJob.where(state: :running).count
-~~~
-
-Retry all failed jobs in the system:
-
-~~~ruby
-RocketJob::Job.where(state: :failed).each do |job|
-  job.retry!
-end
-~~~
-
-Is a job still running?
-
-~~~ruby
-job = RocketJob::Job.find('55aeaf03a26ec0c1bd00008d')
-
-if job.completed?
-  puts "Finished!"
-elsif job.running?
-  puts "The job is being processed by worker: #{job.server_name}"
-end
-~~~
-
-`RocketJob::Job` uses the same ActiveModel implementation that is used in ActiveRecord
-and thereby exposes a very familiar API for anyone familiar with Rails.
-
-Since everything about this job is held in this one document, all
-details about the job are accessible programmatically.
+See the [Active Model Validation Documentation](https://github.com/rails/rails/blob/master/activemodel/lib/active_model/validations.rb)
+for more detailed information on validations that are available. 
 
 ### Cron replacement
 
@@ -330,7 +356,8 @@ includes the `RocketJob::Plugins::Cron` plugin.
 
 Benefits over regular cron:
 
-* Easily run a Cron job immediately, via [Rocket Job Mission Control][1], or
+* Easily run a Cron job immediately, via [Rocket Job Mission Control][1], by pressing the `run` button 
+  under `Scheduled Jobs` or
 
 ~~~ruby
 MyCronJob.first.update_attributes(run_at: nil)
